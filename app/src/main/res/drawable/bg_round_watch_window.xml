@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 圆形手表屏幕窗口背景:深色底 + 圆形剪裁提示 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/md_background" />
+</layer-list>

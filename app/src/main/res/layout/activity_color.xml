@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 颜色修改页:集中展示三个文字颜色选项 -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:scrollbars="none"
+    android:overScrollMode="never"
+    android:background="@color/md_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/watch_screen_padding">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/feature_theme_color"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textColor="@color/md_on_surface" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBack"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/btn_height"
+            android:layout_marginTop="@dimen/space_md"
+            android:text="@string/back"
+            app:cornerRadius="@dimen/card_radius_small" />
+
+        <!-- 首页 banner 文字色 -->
+        <include
+            android:id="@+id/cardColorBanner"
+            layout="@layout/item_color_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md" />
+
+        <!-- 发布按钮文字色 -->
+        <include
+            android:id="@+id/cardColorPublish"
+            layout="@layout/item_color_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md" />
+
+        <!-- 名字文字色 -->
+        <include
+            android:id="@+id/cardColorName"
+            layout="@layout/item_color_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md" />
+    </LinearLayout>
+</ScrollView>

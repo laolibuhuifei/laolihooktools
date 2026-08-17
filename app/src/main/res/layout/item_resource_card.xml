@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 单个资源替换卡:单列布局,每行一个控件 -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/md_surface"
+    app:cardCornerRadius="@dimen/card_radius"
+    app:cardElevation="@dimen/card_elevation"
+    app:strokeColor="@color/md_outline_variant"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/space_lg">
+
+        <!-- 标题 -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/feature_head_bg"
+            android:textAppearance="?attr/textAppearanceTitleSmall"
+            android:textColor="@color/md_on_surface" />
+
+        <!-- 描述 -->
+        <TextView
+            android:id="@+id/tvDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:gravity="center"
+            android:text="@string/feature_head_bg_desc"
+            android:textAppearance="?attr/textAppearanceLabelSmall"
+            android:textColor="@color/md_on_surface_variant" />
+
+        <!-- 启用开关 -->
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchEnable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/space_sm" />
+
+        <!-- 原始路径 -->
+        <TextView
+            android:id="@+id/tvPath"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:gravity="center"
+            android:fontFamily="monospace"
+            android:textAppearance="?attr/textAppearanceLabelSmall"
+            android:textColor="@color/md_on_surface_variant" />
+
+        <!-- 预览图(居中圆形) -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivPreview"
+            android:layout_width="@dimen/preview_size"
+            android:layout_height="@dimen/preview_size"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/space_md"
+            android:scaleType="centerCrop"
+            android:background="@color/md_surface_variant"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Laoli.Circle" />
+
+        <!-- 图片状态 -->
+        <TextView
+            android:id="@+id/tvImageState"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:gravity="center"
+            android:text="@string/image_not_set"
+            android:textAppearance="?attr/textAppearanceLabelMedium"
+            android:textColor="@color/md_on_surface_variant" />
+
+        <!-- 选择按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSelect"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/select_image"
+            app:cornerRadius="@dimen/card_radius_small"
+            app:icon="@drawable/ic_image"
+            app:iconGravity="textStart" />
+
+        <!-- 清除按钮 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClear"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_xs"
+            android:text="@string/clear_image"
+            android:textColor="@color/md_error"
+            app:cornerRadius="@dimen/card_radius_small"
+            app:strokeColor="@color/md_error" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

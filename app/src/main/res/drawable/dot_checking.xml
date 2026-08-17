@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 激活状态指示点:检测中(橙色) -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/md_warning" />
+    <size android:width="10dp" android:height="10dp" />
+</shape>

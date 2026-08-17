@@ -1,0 +1,2 @@
+# Xposed 入口类(全限定名)
+com.laoli.hooktools.hook.MomentHook

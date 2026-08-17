@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 应用基础 -->
+    <string name="app_name">老李 Hook Tools</string>
+    <string name="module_description">自定义好友圈图片资源(背景/消息背景)</string>
+
+    <!-- 激活状态 -->
+    <string name="status_active">模块已激活</string>
+    <string name="status_summary_active">模块已激活😋</string>
+    <string name="status_summary_inactive">模块未激活</string>
+    <string name="status_framework_only">框架已安装,模块未激活</string>
+    <string name="status_module_loaded">模块已加载,好友圈未生效</string>
+    <string name="status_no_framework">未检测到 Xposed 框架</string>
+    <string name="status_checking">检测中…</string>
+    <string name="last_active_time">最近激活:%1$s</string>
+    <string name="never_active">尚未在好友圈中运行</string>
+
+    <!-- 排查指引 -->
+    <string name="hint_no_framework">请先安装 LSPosed 框架并重启</string>
+    <string name="hint_framework_only">请在 LSPosed Manager 中启用本模块\n并确保作用域勾选"老李 Hook Tools"自身</string>
+    <string name="hint_module_loaded">请在 LSPosed 作用域勾选"好友圈"\n然后打开一次好友圈应用</string>
+    <string name="hint_active">一切正常,可正常使用</string>
+
+    <!-- 功能卡片 -->
+    <string name="module_target">目标应用:好友圈(com.xtc.moment)</string>
+    <string name="module_version">版本 %1$s</string>
+
+    <string name="feature_head_bg">好友圈背景</string>
+    <string name="feature_head_bg_desc">替换 bg_head_view.png(顶部头图)</string>
+    <string name="feature_msg_bg">消息背景</string>
+    <string name="feature_msg_bg_desc">替换 bg_new_message.png(新消息背景)</string>
+
+    <string name="feature_moment_scene">好友圈标题文字</string>
+    <string name="feature_moment_scene_desc">替换 app_name 默认“好友圈”（首页顶部）</string>
+    <string name="string_value_hint">输入自定义文字</string>
+    <string name="string_not_set">未设置自定义文字</string>
+    <string name="string_set">已设置:%1$s</string>
+
+    <!-- 主题色 -->
+    <string name="feature_theme_color">主题色</string>
+    <string name="color_banner_title">首页 banner 文字色</string>
+    <string name="color_banner_desc">顶部“好友圈”文字颜色（默认橙色）</string>
+    <string name="color_publish_title">发布按钮文字色</string>
+    <string name="color_publish_desc">“发布动态”按钮文字颜色（默认白色）</string>
+    <string name="color_name_title">名字文字色</string>
+    <string name="color_name_desc">昵称文字颜色（默认白色）</string>
+    <string name="color_not_set">未设置</string>
+    <string name="color_set">当前:%1$s</string>
+    <string name="color_value_hint">自定义颜色 #RRGGBB</string>
+
+    <!-- 时间详细显示 -->
+    <string name="feature_time_detail">详细时间显示</string>
+    <string name="feature_time_detail_desc">每条朋友圈时间显示为完整日期（yyyy-MM-dd HH:mm）</string>
+    <string name="feature_anti_delete">防删除</string>
+    <string name="feature_anti_delete_desc">防止好友/他人删除导致动态从本地消失（自己删除不受影响）</string>
+    <string name="feature_link_jump">链接自动跳转</string>
+    <string name="feature_link_jump_desc">检测动态中的链接，显示为蓝色下划线，点击用浏览器打开</string>
+    <string name="restore_all_edit">还原所有编辑的动态</string>
+    <string name="restore_all_edit_desc">一键清除所有已编辑的动态，恢复为原始内容</string>
+    <string name="restore_all_edit_confirm">确定要还原所有编辑的动态吗？此操作不可撤销。</string>
+    <string name="restore_all_edit_done">已还原所有编辑的动态</string>
+
+    <string name="enable_feature">启用替换</string>
+    <string name="select_image">选择图片</string>
+    <string name="preview_image">预览</string>
+    <string name="clear_image">清除</string>
+    <string name="image_not_set">未设置自定义图片</string>
+    <string name="image_set">已设置自定义图片</string>
+    <string name="tap_to_select">点击选择图片</string>
+
+    <!-- 操作 -->
+    <string name="save">保存</string>
+    <string name="saved">已保存,重启好友圈生效</string>
+    <string name="restart_target">重启好友圈</string>
+    <string name="restart_target_desc">重启后自定义资源才会生效</string>
+    <string name="force_restart_now">立即强制重启</string>
+
+    <!-- 方屏提示 -->
+    <string name="watch_square_hint">方形手表屏幕 · 已适配</string>
+
+    <!-- 对话框 -->
+    <string name="confirm">确认</string>
+    <string name="cancel">取消</string>
+    <string name="back">返回</string>
+
+    <!-- Toast -->
+    <string name="toast_image_too_large">图片过大,请选择小于 2MB 的图片</string>
+    <string name="toast_saved_success">保存成功</string>
+    <string name="toast_save_failed">保存失败</string>
+    <string name="toast_restarted">好友圈已强制重启</string>
+    <string name="toast_restart_failed">重启失败,请检查 root 权限</string>
+    <string name="toast_no_root">未获取 root 权限,请先授权</string>
+    <string name="toast_no_permission">请授予存储权限</string>
+    <string name="toast_image_invalid">图片无效</string>
+
+    <!-- Root -->
+    <string name="root_status_granted">Root:已授权</string>
+    <string name="root_status_denied">Root:未授权</string>
+    <string name="root_status_checking">Root:检测中</string>
+    <string name="grant_root">授权 Root</string>
+    <string name="grant_root_desc">重启好友圈需要 root 权限来强制停止进程</string>
+
+    <!-- 公告与更新 -->
+    <string name="btn_announcement">查看公告</string>
+    <string name="btn_check_update">检测更新</string>
+    <string name="announcement_title">公告</string>
+    <string name="announcement_loading">加载中…</string>
+    <string name="announcement_empty">暂无公告</string>
+
+    <string name="update_checking">正在检测更新…</string>
+    <string name="update_check_failed">检查更新失败，请检查网络</string>
+    <string name="update_no_update">已是最新版本</string>
+    <string name="update_new_version">发现新版本</string>
+    <string name="update_force_title">发现新版本（强制更新）</string>
+    <string name="update_version">版本 %1$s</string>
+    <string name="update_cancel">取消</string>
+    <string name="update_install_now">立即更新</string>
+    <string name="update_install_btn">立即安装</string>
+    <string name="update_download_done">下载完成</string>
+    <string name="update_download_failed">下载失败，请重试</string>
+    <string name="update_install_failed">打开安装器失败，请手动安装</string>
+</resources>

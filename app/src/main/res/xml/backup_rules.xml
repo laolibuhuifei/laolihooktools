@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <exclude domain="sharedpref" path="laoli_config.xml" />
+    <exclude domain="file" path="replaced_images/" />
+</full-backup-content>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Material Design 3 Expressive 主题 -->
+    <style name="Theme.LaoliHookTools" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/md_primary</item>
+        <item name="colorOnPrimary">@color/md_on_primary</item>
+        <item name="colorPrimaryContainer">@color/md_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/md_on_primary_container</item>
+
+        <item name="colorSecondary">@color/md_secondary</item>
+        <item name="colorOnSecondary">@color/md_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/md_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/md_on_secondary_container</item>
+
+        <item name="colorTertiary">@color/md_tertiary</item>
+        <item name="colorOnTertiary">@color/md_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/md_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/md_on_tertiary_container</item>
+
+        <item name="colorError">@color/md_error</item>
+        <item name="colorOnError">@color/md_on_error</item>
+        <item name="colorErrorContainer">@color/md_error_container</item>
+        <item name="colorOnErrorContainer">@color/md_on_error_container</item>
+
+        <item name="android:colorBackground">@color/md_background</item>
+        <item name="colorOnBackground">@color/md_on_background</item>
+        <item name="colorSurface">@color/md_surface</item>
+        <item name="colorOnSurface">@color/md_on_surface</item>
+        <item name="colorSurfaceVariant">@color/md_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/md_on_surface_variant</item>
+        <item name="colorOutline">@color/md_outline</item>
+        <item name="colorOutlineVariant">@color/md_outline_variant</item>
+
+        <!-- 圆形手表适配:状态栏透明 + 全屏 -->
+        <item name="android:windowBackground">@drawable/bg_round_watch_window</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+
+        <!-- MD3 Expressive 形状(大圆角) -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Laoli.Small</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Laoli.Medium</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Laoli.Large</item>
+
+        <!-- 调大文字(适配手表小屏可读性) -->
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Laoli.TitleMedium</item>
+        <item name="textAppearanceTitleSmall">@style/TextAppearance.Laoli.TitleSmall</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Laoli.BodyMedium</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.Laoli.LabelMedium</item>
+        <item name="textAppearanceLabelSmall">@style/TextAppearance.Laoli.LabelSmall</item>
+    </style>
+
+    <!-- 缩小后的文字样式(紧凑适配手表小屏) -->
+    <style name="TextAppearance.Laoli.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="TextAppearance.Laoli.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
+        <item name="android:textSize">13sp</item>
+    </style>
+    <style name="TextAppearance.Laoli.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">13sp</item>
+    </style>
+    <style name="TextAppearance.Laoli.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">11sp</item>
+    </style>
+    <style name="TextAppearance.Laoli.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <!-- 形状系统:MD3 Expressive 偏大圆角 -->
+    <style name="ShapeAppearance.Laoli.Small" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+    <style name="ShapeAppearance.Laoli.Medium" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+    <style name="ShapeAppearance.Laoli.Large" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+    <!-- 完全圆形(MD3 Expressive 标志性形状) -->
+    <style name="ShapeAppearance.Laoli.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+</resources>

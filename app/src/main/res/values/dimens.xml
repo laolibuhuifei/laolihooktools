@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 方屏手表适配尺寸(小天才 1:1 方屏,无圆角裁剪,边距可较小) -->
+    <dimen name="watch_screen_padding">10dp</dimen>
+    <dimen name="watch_safe_padding">8dp</dimen>
+
+    <!-- 通用 -->
+    <dimen name="card_radius">12dp</dimen>
+    <dimen name="card_radius_small">10dp</dimen>
+    <dimen name="card_elevation">0dp</dimen>
+
+    <!-- 文字 -->
+    <dimen name="text_title">16sp</dimen>
+    <dimen name="text_body">13sp</dimen>
+    <dimen name="text_caption">11sp</dimen>
+
+    <!-- 间距 -->
+    <dimen name="space_xs">3dp</dimen>
+    <dimen name="space_sm">6dp</dimen>
+    <dimen name="space_md">10dp</dimen>
+    <dimen name="space_lg">12dp</dimen>
+    <dimen name="space_xl">16dp</dimen>
+
+    <!-- 组件 -->
+    <dimen name="status_dot">8dp</dimen>
+    <dimen name="preview_size">72dp</dimen>
+    <dimen name="btn_height">40dp</dimen>
+</resources>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 读取用户选择的图片 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <!-- Android 13+ 媒体访问 -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- 网络访问(检查更新/公告/下载APK) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 安装 APK(系统安装器兜底) -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <application
+        android:name=".App"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
+        android:theme="@style/Theme.LaoliHookTools"
+        tools:targetApi="34">
+
+        <!-- 声明这是一个 Xposed 模块 -->
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <!-- 模块说明 -->
+        <meta-data
+            android:name="xposeddescription"
+            android:value="@string/module_description" />
+        <!-- 最低 API 版本 -->
+        <meta-data
+            android:name="xposedminversion"
+            android:value="82" />
+        <!-- 模块作用域:好友圈(同时包含自身,用于自检激活) -->
+        <meta-data
+            android:name="xposedscope"
+            android:resource="@array/xposed_scope" />
+
+        <!-- 模块配置入口 -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 日志查看页 -->
+        <activity
+            android:name=".ui.LogActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 颜色修改页 -->
+        <activity
+            android:name=".ui.ColorActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 公告查看页 -->
+        <activity
+            android:name=".ui.AnnouncementActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 动态编辑页(由好友圈 Hook 跨进程启动,需 exported) -->
+        <activity
+            android:name=".ui.EditMomentActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+
+        <!-- 评论编辑页(由好友圈 Hook 跨进程启动,需 exported) -->
+        <activity
+            android:name=".ui.EditCommentActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+
+        <!-- 圆形手表屏幕适配声明 -->
+        <meta-data
+            android:name="com.google.android.wearable.standalone"
+            android:value="false" />
+
+        <!-- 激活状态回传 Provider(好友圈进程跨包写入,模块 UI 读取) -->
+        <provider
+            android:name=".provider.ActiveProvider"
+            android:authorities="com.laoli.hooktools.provider"
+            android:exported="true"
+            android:grantUriPermissions="true" />
+
+        <!-- FileProvider(系统安装器安装 APK 兜底) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.laoli.hooktools.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+
+</manifest>

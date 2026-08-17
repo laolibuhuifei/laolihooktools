@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material Design 3 Expressive 配色(明亮) -->
+    <!-- 主色:电光绿(呼应好友圈品牌) -->
+    <color name="md_primary">#006D40</color>
+    <color name="md_on_primary">#FFFFFF</color>
+    <color name="md_primary_container">#8DF8B7</color>
+    <color name="md_on_primary_container">#002111</color>
+    <color name="md_secondary">#4C6358</color>
+    <color name="md_on_secondary">#FFFFFF</color>
+    <color name="md_secondary_container">#CFE9DA</color>
+    <color name="md_on_secondary_container">#092016</color>
+    <color name="md_tertiary">#426278</color>
+    <color name="md_on_tertiary">#FFFFFF</color>
+    <color name="md_tertiary_container">#C7E7FF</color>
+    <color name="md_on_tertiary_container">#001E2F</color>
+
+    <color name="md_error">#BA1A1A</color>
+    <color name="md_on_error">#FFFFFF</color>
+    <color name="md_error_container">#FFDAD6</color>
+    <color name="md_on_error_container">#410002</color>
+
+    <color name="md_background">#F5FBF3</color>
+    <color name="md_on_background">#191C1A</color>
+    <color name="md_surface">#F5FBF3</color>
+    <color name="md_on_surface">#191C1A</color>
+    <color name="md_surface_variant">#DCE5DC</color>
+    <color name="md_on_surface_variant">#414942</color>
+    <color name="md_outline">#717971</color>
+    <color name="md_outline_variant">#C0C9C0</color>
+
+    <color name="md_success">#1F8A4C</color>
+    <color name="md_warning">#B85F00</color>
+
+    <!-- 强调色(MD3 Expressive 标志性的高饱和色) -->
+    <color name="md_expressive_pink">#FF4D9E</color>
+    <color name="md_expressive_yellow">#FFD400</color>
+    <color name="md_expressive_blue">#2E7DFF</color>
+
+    <!-- 圆屏边缘遮罩 -->
+    <color name="watch_scrim">#00000000</color>
+</resources>

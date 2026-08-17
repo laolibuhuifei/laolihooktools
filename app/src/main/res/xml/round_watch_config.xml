@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<device-config>
+    <!-- 小天才智能手表为 1:1 方形屏幕 -->
+    <screen aspect-ratio="1:1" round="false" />
+</device-config>

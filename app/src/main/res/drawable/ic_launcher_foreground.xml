@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- 前景:绿色钩子图标 -->
+    <path
+        android:fillColor="#006D40"
+        android:pathData="M54,18 C34,18 18,34 18,54 C18,74 34,90 54,90 C74,90 90,74 90,54 C90,34 74,18 54,18 Z M48,68 L34,54 L40,48 L48,56 L70,34 L76,40 L48,68 Z" />
+</vector>

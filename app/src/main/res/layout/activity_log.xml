@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 日志查看页 -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/md_background"
+    android:padding="@dimen/watch_screen_padding">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="注入日志"
+        android:textAppearance="?attr/textAppearanceTitleSmall"
+        android:textColor="@color/md_on_surface" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnRefreshLog"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_sm"
+        android:text="刷新日志"
+        app:cornerRadius="@dimen/card_radius_small" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnClearLog"
+        style="?attr/materialButtonOutlinedStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_xs"
+        android:text="清空日志"
+        android:textColor="@color/md_error"
+        app:cornerRadius="@dimen/card_radius_small"
+        app:strokeColor="@color/md_error" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/space_sm"
+        android:background="@color/md_surface_variant"
+        android:padding="@dimen/space_sm">
+
+        <TextView
+            android:id="@+id/tvLogContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textSize="10sp"
+            android:textColor="@color/md_on_surface"
+            android:textIsSelectable="true"
+            android:text="日志加载中..." />
+
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/space_sm"
+        android:text="返回"
+        app:cornerRadius="@dimen/card_radius_small" />
+
+</LinearLayout>

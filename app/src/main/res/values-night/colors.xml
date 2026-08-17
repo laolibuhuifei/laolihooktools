@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material Design 3 Expressive 配色(暗色) -->
+    <color name="md_primary">#71DD9E</color>
+    <color name="md_on_primary">#003921</color>
+    <color name="md_primary_container">#005232</color>
+    <color name="md_on_primary_container">#8DF8B7</color>
+    <color name="md_secondary">#B3CDBE</color>
+    <color name="md_on_secondary">#1F352A</color>
+    <color name="md_secondary_container">#354B40</color>
+    <color name="md_on_secondary_container">#CFE9DA</color>
+    <color name="md_tertiary">#AACBE4</color>
+    <color name="md_on_tertiary">#113348</color>
+    <color name="md_tertiary_container">#2A4A60</color>
+    <color name="md_on_tertiary_container">#C7E7FF</color>
+
+    <color name="md_error">#FFB4AB</color>
+    <color name="md_on_error">#690005</color>
+    <color name="md_error_container">#93000A</color>
+    <color name="md_on_error_container">#FFDAD6</color>
+
+    <color name="md_background">#0E1411</color>
+    <color name="md_on_background">#E0E4DF</color>
+    <color name="md_surface">#0E1411</color>
+    <color name="md_on_surface">#E0E4DF</color>
+    <color name="md_surface_variant">#414942</color>
+    <color name="md_on_surface_variant">#C0C9C0</color>
+    <color name="md_outline">#8A938A</color>
+    <color name="md_outline_variant">#414942</color>
+
+    <color name="md_success">#6CD68F</color>
+    <color name="md_warning">#FFB95C</color>
+
+    <color name="md_expressive_pink">#FF80B8</color>
+    <color name="md_expressive_yellow">#FFE54C</color>
+    <color name="md_expressive_blue">#7AA9FF</color>
+</resources>
