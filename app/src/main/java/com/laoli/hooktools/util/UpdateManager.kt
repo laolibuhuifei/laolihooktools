@@ -41,6 +41,24 @@ object UpdateManager {
         val publishTime: Long
     )
 
+    /** 适配应用 */
+    data class AdaptApp(
+        val id: Long,
+        val name: String,
+        val iconUrl: String?,
+        val apkUrl: String?,
+        val apkSize: Long,
+        val publishTime: Long
+    )
+
+    /** 字体 */
+    data class FontItem(
+        val id: Long,
+        val name: String,
+        val fontUrl: String?,
+        val publishTime: Long
+    )
+
     /**
      * 检查更新。
      * @return 有更新返回 UpdateInfo,无更新返回 hasUpdate=false 的 UpdateInfo,网络失败返回 null
@@ -96,10 +114,70 @@ object UpdateManager {
     }
 
     /**
-     * 下载 APK 到目标文件,实时回调下载进度。
+     * 获取适配应用列表。
+     * @return 适配应用列表,网络失败返回空列表
+     */
+    fun fetchApps(): List<AdaptApp> {
+        val url = "${Constants.API_BASE_URL}/api/app/list"
+        val body = httpGet(url) ?: return emptyList()
+        return try {
+            val obj = JSONObject(body)
+            val arr = obj.optJSONArray("apps") ?: return emptyList()
+            val list = mutableListOf<AdaptApp>()
+            for (i in 0 until arr.length()) {
+                val a = arr.optJSONObject(i) ?: continue
+                list.add(
+                    AdaptApp(
+                        id = a.optLong("id", 0),
+                        name = a.optString("name", ""),
+                        iconUrl = if (a.isNull("iconUrl")) null else a.optString("iconUrl", null),
+                        apkUrl = if (a.isNull("apkUrl")) null else a.optString("apkUrl", null),
+                        apkSize = a.optLong("apkSize", 0),
+                        publishTime = a.optLong("publishTime", 0)
+                    )
+                )
+            }
+            list
+        } catch (t: Throwable) {
+            Logger.e("Update", "解析适配应用列表失败", t)
+            emptyList()
+        }
+    }
+
+    /**
+     * 获取字体列表。
+     * @return 字体列表,网络失败返回空列表
+     */
+    fun fetchFonts(): List<FontItem> {
+        val url = "${Constants.API_BASE_URL}/api/font/list"
+        val body = httpGet(url) ?: return emptyList()
+        return try {
+            val obj = JSONObject(body)
+            val arr = obj.optJSONArray("fonts") ?: return emptyList()
+            val list = mutableListOf<FontItem>()
+            for (i in 0 until arr.length()) {
+                val f = arr.optJSONObject(i) ?: continue
+                list.add(
+                    FontItem(
+                        id = f.optLong("id", 0),
+                        name = f.optString("name", ""),
+                        fontUrl = if (f.isNull("fontUrl")) null else f.optString("fontUrl", null),
+                        publishTime = f.optLong("publishTime", 0)
+                    )
+                )
+            }
+            list
+        } catch (t: Throwable) {
+            Logger.e("Update", "解析字体列表失败", t)
+            emptyList()
+        }
+    }
+
+    /**
+     * 下载文件到目标文件,实时回调下载进度(通用下载)。
      * @return 是否下载成功
      */
-    fun downloadApk(
+    fun downloadFile(
         url: String,
         dest: File,
         onProgress: (downloaded: Long, total: Long) -> Unit
@@ -129,10 +207,20 @@ object UpdateManager {
             }
             true
         } catch (t: Throwable) {
-            Logger.e("Update", "下载 APK 失败", t)
+            Logger.e("Update", "下载文件失败", t)
             false
         }
     }
+
+    /**
+     * 下载 APK 到目标文件,实时回调下载进度。
+     * @return 是否下载成功
+     */
+    fun downloadApk(
+        url: String,
+        dest: File,
+        onProgress: (downloaded: Long, total: Long) -> Unit
+    ): Boolean = downloadFile(url, dest, onProgress)
 
     /**
      * 调起系统安装器安装 APK。

@@ -212,4 +212,144 @@ object FileConfig {
         val targetJson = json.optJSONObject(LINK_JUMP_KEY) ?: return false
         return targetJson.optBoolean("enabled", false)
     }
+
+    // ---- 自定义字体 ----
+
+    /** 自定义字体配置的 JSON key */
+    private const val FONT_KEY = "custom_font"
+
+    /** 更新自定义字体配置 */
+    fun updateFont(enabled: Boolean, path: String?) {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(FONT_KEY) ?: JSONObject()
+        targetJson.put("enabled", enabled)
+        if (path != null) {
+            targetJson.put("path", path)
+        } else {
+            targetJson.remove("path")
+        }
+        json.put(FONT_KEY, targetJson)
+        writeConfig(json)
+    }
+
+    /** 读取自定义字体配置:返回 (enabled, path) */
+    fun getFont(): Pair<Boolean, String?> {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(FONT_KEY) ?: return false to null
+        val enabled = targetJson.optBoolean("enabled", false)
+        val path = targetJson.optString("path", null)
+        return enabled to path
+    }
+
+    // ---- 运动:能量值 ----
+
+    /** 运动能量配置的 JSON key */
+    private const val SPORT_ENERGY_KEY = "sport_energy"
+
+    /** 更新运动能量配置 */
+    fun updateSportEnergy(enabled: Boolean, value: Int?) {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_ENERGY_KEY) ?: JSONObject()
+        targetJson.put("enabled", enabled)
+        if (value != null) {
+            targetJson.put("value", value)
+        } else {
+            targetJson.remove("value")
+        }
+        json.put(SPORT_ENERGY_KEY, targetJson)
+        writeConfig(json)
+    }
+
+    /** 读取运动能量配置:返回 (enabled, value) */
+    fun getSportEnergy(): Pair<Boolean, Int?> {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_ENERGY_KEY) ?: return false to null
+        val enabled = targetJson.optBoolean("enabled", false)
+        val value = if (targetJson.has("value")) targetJson.optInt("value") else null
+        return enabled to value
+    }
+
+    // ---- 运动:一键红环 ----
+
+    /** 一键红环配置的 JSON key */
+    private const val SPORT_RED_RING_KEY = "sport_red_ring"
+
+    /** 更新一键红环配置 */
+    fun updateSportRedRing(enabled: Boolean, count: Int?) {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_RED_RING_KEY) ?: JSONObject()
+        targetJson.put("enabled", enabled)
+        if (count != null) {
+            targetJson.put("count", count)
+        } else {
+            targetJson.remove("count")
+        }
+        json.put(SPORT_RED_RING_KEY, targetJson)
+        writeConfig(json)
+    }
+
+    /** 读取一键红环配置:返回 (enabled, count) */
+    fun getSportRedRing(): Pair<Boolean, Int> {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_RED_RING_KEY) ?: return false to 1
+        val enabled = targetJson.optBoolean("enabled", false)
+        val count = targetJson.optInt("count", 1).coerceAtLeast(1)
+        return enabled to count
+    }
+
+    // ---- 运动:自定义字体 ----
+
+    /** 运动自定义字体配置的 JSON key */
+    private const val SPORT_FONT_KEY = "sport_font"
+
+    /** 更新运动自定义字体配置 */
+    fun updateSportFont(enabled: Boolean, path: String?) {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_FONT_KEY) ?: JSONObject()
+        targetJson.put("enabled", enabled)
+        if (path != null) {
+            targetJson.put("path", path)
+        } else {
+            targetJson.remove("path")
+        }
+        json.put(SPORT_FONT_KEY, targetJson)
+        writeConfig(json)
+    }
+
+    /** 读取运动自定义字体配置:返回 (enabled, path) */
+    fun getSportFont(): Pair<Boolean, String?> {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_FONT_KEY) ?: return false to null
+        val enabled = targetJson.optBoolean("enabled", false)
+        val path = targetJson.optString("path", null)
+        return enabled to path
+    }
+
+    // ---- 运动:自定义头像 ----
+
+    /** 运动头像配置的 JSON key */
+    private const val SPORT_AVATAR_KEY = "sport_avatar"
+
+    /** 更新运动头像配置 */
+    fun updateSportAvatar(enabled: Boolean, path: String?) {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_AVATAR_KEY) ?: JSONObject()
+        targetJson.put("enabled", enabled)
+        if (path != null) {
+            targetJson.put("path", path)
+        } else {
+            targetJson.remove("path")
+        }
+        json.put(SPORT_AVATAR_KEY, targetJson)
+        writeConfig(json)
+    }
+
+    /** 读取运动头像配置:返回 (enabled, path) */
+    fun getSportAvatar(): Pair<Boolean, String?> {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_AVATAR_KEY) ?: return false to null
+        val enabled = targetJson.optBoolean("enabled", false)
+        val path = targetJson.optString("path", null)
+        return enabled to path
+    }
 }

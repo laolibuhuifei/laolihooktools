@@ -9,6 +9,9 @@ object Constants {
     /** 目标应用(好友圈)包名 */
     const val TARGET_PACKAGE = "com.xtc.moment"
 
+    /** 运动应用包名 */
+    const val SPORT_PACKAGE = "com.xtc.sport"
+
     /** 模块自身包名 */
     const val MODULE_PACKAGE = "com.laoli.hooktools"
 
@@ -47,6 +50,34 @@ object Constants {
 
     // ---- 链接自动跳转配置 key ----
     const val KEY_LINK_JUMP_ENABLED = "link_jump_enabled"
+
+    // ---- 自定义字体配置 key ----
+    const val KEY_FONT_ENABLED = "font_enabled"
+    const val KEY_FONT_PATH = "font_path"
+
+    // ---- 模块自身字体配置 key ----
+    const val KEY_MODULE_FONT_ENABLED = "module_font_enabled"
+    const val KEY_MODULE_FONT_PATH = "module_font_path"
+
+    // ---- 运动配置 key ----
+    const val KEY_SPORT_ENERGY_ENABLED = "sport_energy_enabled"
+    const val KEY_SPORT_ENERGY_VALUE = "sport_energy_value"
+    const val KEY_SPORT_RED_RING_ENABLED = "sport_red_ring_enabled"
+    const val KEY_SPORT_RED_RING_COUNT = "sport_red_ring_count"
+    const val KEY_SPORT_FONT_ENABLED = "sport_font_enabled"
+    const val KEY_SPORT_FONT_PATH = "sport_font_path"
+    const val KEY_SPORT_AVATAR_ENABLED = "sport_avatar_enabled"
+    const val KEY_SPORT_AVATAR_PATH = "sport_avatar_path"
+
+    /** 自定义字体文件在外部存储中的文件名 */
+    const val FONT_FILE_NAME = "custom_font.ttf"
+    /** 运动自定义字体文件名 */
+    const val SPORT_FONT_FILE_NAME = "sport_font.ttf"
+    /** 自定义字体文件最大字节数(20MB) */
+    const val FONT_MAX_BYTES = 20L * 1024 * 1024
+
+    /** 下载字体存放子目录名(位于 /sdcard/laoli_hooktools/ 下) */
+    const val FONT_DOWNLOAD_DIR_NAME = "fonts"
 
     /** 详细时间显示格式(完整年月日 时分) */
     const val TIME_DETAIL_FORMAT = "yyyy-MM-dd HH:mm"

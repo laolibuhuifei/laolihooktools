@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Xposed 模块作用域:好友圈 + 模块自身(用于自检激活) -->
+    <!-- Xposed 模块作用域:好友圈 + 运动 + 模块自身(用于自检激活) -->
     <string-array name="xposed_scope">
         <item>com.xtc.moment</item>
+        <item>com.xtc.sport</item>
         <item>com.laoli.hooktools</item>
     </string-array>
 </resources>

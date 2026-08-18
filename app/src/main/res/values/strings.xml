@@ -55,6 +55,30 @@
     <string name="feature_anti_delete_desc">防止好友/他人删除导致动态从本地消失（自己删除不受影响）</string>
     <string name="feature_link_jump">链接自动跳转</string>
     <string name="feature_link_jump_desc">检测动态中的链接，显示为蓝色下划线，点击用浏览器打开</string>
+    <string name="feature_font">自定义字体</string>
+    <string name="feature_font_desc">选择 .ttf/.otf 字体文件，替换好友圈全部文字字体</string>
+    <string name="font_not_set">未设置自定义字体</string>
+    <string name="font_set">已设置自定义字体</string>
+    <string name="select_font">选择字体文件</string>
+    <string name="toast_font_invalid">请选择 .ttf 或 .otf 字体文件</string>
+
+    <!-- 字体中心 -->
+    <string name="font_center_title">字体中心</string>
+    <string name="font_preview">预览</string>
+    <string name="font_preview_sample">你好，好友圈！ABC 123</string>
+    <string name="font_downloading">正在下载字体…</string>
+    <string name="font_downloading_title">正在下载 %1$s</string>
+    <string name="font_download_done">字体已下载</string>
+    <string name="font_download_failed">下载失败，请重试</string>
+    <string name="font_empty">暂无字体</string>
+    <string name="font_select_downloaded">选择已下载字体</string>
+    <string name="font_no_downloaded">还没有已下载的字体，请先到字体中心下载</string>
+    <string name="font_delete">删除</string>
+    <string name="font_deleted">字体已删除</string>
+    <string name="module_font_title">模块字体</string>
+    <string name="module_font_desc">设置本模块界面的显示字体</string>
+    <string name="module_font_not_set">未设置模块字体</string>
+    <string name="module_font_set">已设置模块字体</string>
     <string name="restore_all_edit">还原所有编辑的动态</string>
     <string name="restore_all_edit_desc">一键清除所有已编辑的动态，恢复为原始内容</string>
     <string name="restore_all_edit_confirm">确定要还原所有编辑的动态吗？此操作不可撤销。</string>
@@ -84,7 +108,7 @@
     <string name="back">返回</string>
 
     <!-- Toast -->
-    <string name="toast_image_too_large">图片过大,请选择小于 2MB 的图片</string>
+    <string name="toast_image_too_large">图片过大,请选择小于 5MB 的图片</string>
     <string name="toast_saved_success">保存成功</string>
     <string name="toast_save_failed">保存失败</string>
     <string name="toast_restarted">好友圈已强制重启</string>
@@ -107,6 +131,14 @@
     <string name="announcement_loading">加载中…</string>
     <string name="announcement_empty">暂无公告</string>
 
+    <!-- 适配应用下载 -->
+    <string name="app_center_title">适配应用下载</string>
+    <string name="app_download">下载</string>
+    <string name="app_downloading">正在下载 %1$s</string>
+    <string name="app_download_failed">下载失败，请重试</string>
+    <string name="app_empty">暂无适配应用</string>
+    <string name="app_size_unknown">未知大小</string>
+
     <string name="update_checking">正在检测更新…</string>
     <string name="update_check_failed">检查更新失败，请检查网络</string>
     <string name="update_no_update">已是最新版本</string>
@@ -119,4 +151,21 @@
     <string name="update_download_done">下载完成</string>
     <string name="update_download_failed">下载失败，请重试</string>
     <string name="update_install_failed">打开安装器失败，请手动安装</string>
+
+    <!-- 运动设置 -->
+    <string name="sport_settings_title">运动设置</string>
+    <string name="sport_energy_title">能量值修改</string>
+    <string name="sport_energy_desc">自定义运动应用显示的能量数值</string>
+    <string name="sport_energy_hint">输入能量值（整数）</string>
+    <string name="sport_energy_save">保存能量值</string>
+    <string name="sport_red_ring_title">一键红环</string>
+    <string name="sport_red_ring_desc">将运动环等级全部改为 5 级（红环）</string>
+    <string name="sport_ring_count_hint">红环数量（1~20）</string>
+    <string name="sport_ring_count_save">保存红环数量</string>
+    <string name="sport_font_title">运动自定义字体</string>
+    <string name="sport_font_desc">选择 .ttf/.otf 字体文件，替换运动应用全部文字字体</string>
+    <string name="sport_avatar_title">自定义虚拟头像</string>
+    <string name="sport_avatar_desc">从相册选择一张图片，替换虚拟形象的显示头像</string>
+    <string name="restart_sport">重启运动</string>
+    <string name="toast_sport_restarted">运动已强制重启</string>
 </resources>

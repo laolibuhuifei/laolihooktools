@@ -41,7 +41,7 @@ object ImageManager {
      * 将 [uri] 指向的图片拷贝到外部存储目录,返回目标文件绝对路径。
      * @param maxBytes 最大字节数,超过返回 null
      */
-    fun importUri(context: Context, uri: Uri, targetName: String, maxBytes: Long = 2 * 1024 * 1024): String? {
+    fun importUri(context: Context, uri: Uri, targetName: String, maxBytes: Long = 5 * 1024 * 1024): String? {
         return try {
             // 大小校验
             val size = getFileSize(context, uri)
@@ -77,7 +77,7 @@ object ImageManager {
      * 将小天才相册返回的文件路径 [sourcePath] 拷贝到外部存储目录,返回目标文件绝对路径。
      * @param maxBytes 最大字节数,超过返回 null
      */
-    fun importPath(context: Context, sourcePath: String, targetName: String, maxBytes: Long = 2 * 1024 * 1024): String? {
+    fun importPath(context: Context, sourcePath: String, targetName: String, maxBytes: Long = 5 * 1024 * 1024): String? {
         return try {
             val src = File(sourcePath)
             if (!src.exists()) return null

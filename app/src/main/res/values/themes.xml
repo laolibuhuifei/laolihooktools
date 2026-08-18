@@ -53,19 +53,19 @@
 
     <!-- 缩小后的文字样式(紧凑适配手表小屏) -->
     <style name="TextAppearance.Laoli.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
-        <item name="android:textSize">15sp</item>
+        <item name="android:textSize">13sp</item>
     </style>
     <style name="TextAppearance.Laoli.TitleSmall" parent="TextAppearance.Material3.TitleSmall">
-        <item name="android:textSize">13sp</item>
+        <item name="android:textSize">12sp</item>
     </style>
     <style name="TextAppearance.Laoli.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
-        <item name="android:textSize">13sp</item>
-    </style>
-    <style name="TextAppearance.Laoli.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
         <item name="android:textSize">11sp</item>
     </style>
-    <style name="TextAppearance.Laoli.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+    <style name="TextAppearance.Laoli.LabelMedium" parent="TextAppearance.Material3.LabelMedium">
         <item name="android:textSize">10sp</item>
+    </style>
+    <style name="TextAppearance.Laoli.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">9sp</item>
     </style>
 
     <!-- 形状系统:MD3 Expressive 偏大圆角 -->

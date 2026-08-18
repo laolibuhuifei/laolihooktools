@@ -71,6 +71,30 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <!-- 适配应用下载页 -->
+        <activity
+            android:name=".ui.DownloadAppsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 字体中心页 -->
+        <activity
+            android:name=".ui.FontCenterActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 模块字体设置页 -->
+        <activity
+            android:name=".ui.ModuleFontActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 运动设置页 -->
+        <activity
+            android:name=".ui.SportSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <!-- 动态编辑页(由好友圈 Hook 跨进程启动,需 exported) -->
         <activity
             android:name=".ui.EditMomentActivity"
@@ -81,6 +105,24 @@
         <activity
             android:name=".ui.EditCommentActivity"
             android:exported="true"
+            android:screenOrientation="portrait" />
+
+        <!-- 收藏夹页 -->
+        <activity
+            android:name=".ui.FavoriteActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 好友圈设置页 -->
+        <activity
+            android:name=".ui.FriendCircleSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
+        <!-- 收藏详情页(全屏查看收藏动态) -->
+        <activity
+            android:name=".ui.FavoriteDetailActivity"
+            android:exported="false"
             android:screenOrientation="portrait" />
 
         <!-- 圆形手表屏幕适配声明 -->

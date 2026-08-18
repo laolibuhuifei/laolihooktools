@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="4dp">
+
+    <!-- 发布者 + 正文(对应好友圈 view_moment.xml) -->
+    <RelativeLayout
+        android:id="@+id/rlFavMoment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+
+        <!-- 头像 + 名字(对应 layout_icon_and_name.xml) -->
+        <RelativeLayout
+            android:id="@+id/rlFavSender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/ivFavIconBg"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/head_round_corner_bg" />
+
+            <ImageView
+                android:id="@+id/ivFavIcon"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:contentDescription="头像" />
+
+            <TextView
+                android:id="@+id/tvFavName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/ivFavIcon"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="17sp"
+                android:textColor="#fec02b" />
+        </RelativeLayout>
+
+        <!-- 正文 -->
+        <TextView
+            android:id="@+id/tvFavContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rlFavSender"
+            android:layout_marginTop="4dp"
+            android:textSize="15sp"
+            android:textColor="#ffffff" />
+    </RelativeLayout>
+
+    <!-- 底部:时间 + 点赞 + 评论(对应 item_recycle_moment.xml 的 ll_fun) -->
+    <LinearLayout
+        android:id="@+id/llFavFun"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rlFavMoment"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvFavMeta"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="12sp"
+            android:textColor="#66fafafa" />
+
+        <ImageView
+            android:id="@+id/ivFavLike"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/circle_like_normal"
+            android:contentDescription="点赞" />
+
+        <TextView
+            android:id="@+id/tvFavLikeCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="7dp"
+            android:textSize="12sp"
+            android:textColor="#66fafafa" />
+
+        <ImageView
+            android:id="@+id/ivFavComment"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="11dp"
+            android:layout_marginEnd="7dp"
+            android:src="@drawable/ic_comment"
+            android:contentDescription="评论" />
+    </LinearLayout>
+
+    <!-- 分隔线 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_below="@id/llFavFun"
+        android:background="@drawable/view_item_seperator" />
+</RelativeLayout>

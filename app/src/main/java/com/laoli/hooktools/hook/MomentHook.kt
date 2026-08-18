@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Environment
 import android.os.Handler
@@ -38,6 +39,7 @@ import com.laoli.hooktools.util.ActivationChecker
 import com.laoli.hooktools.util.Constants
 import com.laoli.hooktools.util.EditedCommentStore
 import com.laoli.hooktools.util.EditedMomentStore
+import com.laoli.hooktools.util.FavoriteStore
 import com.laoli.hooktools.util.Logger
 import java.io.File
 import java.net.HttpURLConnection
@@ -93,6 +95,54 @@ class MomentHook :
         @Volatile
         private var linkJumpEnabled = false
 
+        /** 自定义字体是否启用 */
+        @Volatile
+        private var fontEnabled = false
+
+        /** 自定义字体文件路径 */
+        @Volatile
+        private var fontPath: String? = null
+
+        /** 已加载的自定义 Typeface(缓存,避免每次都 createFromFile) */
+        @Volatile
+        private var customTypeface: Typeface? = null
+
+        /** 运动:能量值修改是否启用 */
+        @Volatile
+        private var sportEnergyEnabled = false
+
+        /** 运动:自定义能量值 */
+        @Volatile
+        private var sportEnergyValue: Int? = null
+
+        /** 运动:一键红环是否启用 */
+        @Volatile
+        private var sportRedRingEnabled = false
+
+        /** 运动:红环数量(1 个红环 = 625,level = 数量 * 625) */
+        @Volatile
+        private var sportRedRingCount = 1
+
+        /** 运动:自定义字体是否启用 */
+        @Volatile
+        private var sportFontEnabled = false
+
+        /** 运动:自定义字体文件路径 */
+        @Volatile
+        private var sportFontPath: String? = null
+
+        /** 运动:已加载的自定义 Typeface(缓存) */
+        @Volatile
+        private var sportCustomTypeface: Typeface? = null
+
+        /** 运动:自定义头像是否启用 */
+        @Volatile
+        private var sportAvatarEnabled = false
+
+        /** 运动:自定义头像图片路径 */
+        @Volatile
+        private var sportAvatarPath: String? = null
+
         /** URL 匹配正则(http/https/www) */
         private val URL_PATTERN = Pattern.compile(
             "((https?://|www\\.)[\\w\\-._~:/?#\\[\\]@!&'()*+,;=%]+)",
@@ -140,7 +190,7 @@ class MomentHook :
         // 先判断包名:非目标包/模块包直接返回。
         // 避免在 system_server 等系统早期进程写文件日志导致开机卡第一屏。
         val pkg = lpparam.packageName
-        if (pkg != Constants.TARGET_PACKAGE && pkg != Constants.MODULE_PACKAGE) {
+        if (pkg != Constants.TARGET_PACKAGE && pkg != Constants.SPORT_PACKAGE && pkg != Constants.MODULE_PACKAGE) {
             return
         }
 
@@ -155,6 +205,10 @@ class MomentHook :
             Constants.TARGET_PACKAGE -> {
                 Logger.log(TAG, ">>> 进入目标进程:好友圈")
                 handleTarget(lpparam)
+            }
+            Constants.SPORT_PACKAGE -> {
+                Logger.log(TAG, ">>> 进入运动进程")
+                handleSportTarget(lpparam)
             }
             else -> {
                 Logger.log(TAG, ">>> 进入模块自身进程")
@@ -254,12 +308,375 @@ class MomentHook :
                         // hook 评论修改(长按评论 -> 修改颜色/下划线/评论者名称)
                         Logger.log(TAG, ">>> 步骤16: hook 评论修改")
                         hookCommentEdit(app)
+
+                        // hook 自定义字体
+                        Logger.log(TAG, ">>> 步骤17: hook 自定义字体")
+                        hookFont(app)
                     }
                 }
             )
             Logger.log(TAG, "Application.onCreate hook 注册成功")
         } catch (t: Throwable) {
             Logger.e(TAG, "Application.onCreate hook 注册失败", t)
+        }
+    }
+
+    // ---------- 目标进程:运动应用 ----------
+
+    private fun handleSportTarget(lpparam: XC_LoadPackage.LoadPackageParam) {
+        Logger.log(TAG, ">>> handleSportTarget 开始")
+
+        // 读取运动配置(能量/红环/字体)
+        loadSportConfig()
+
+        try {
+            XposedHelpers.findAndHookMethod(
+                Application::class.java,
+                "onCreate",
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val app = param.thisObject as? Application ?: return
+                        Logger.log(TAG, "========== 运动 Application.onCreate 被触发 ==========")
+                        Logger.log(TAG, "application class = ${app.javaClass.name}")
+
+                        // 能量值 + 一键红环
+                        hookSportEnergyAndRing(app)
+
+                        // 自定义字体
+                        hookSportFont(app)
+
+                        // 自定义虚拟形象头像
+                        hookSportAvatar(app)
+                    }
+                }
+            )
+            Logger.log(TAG, "运动 Application.onCreate hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, "运动 Application.onCreate hook 注册失败", t)
+        }
+    }
+
+    /** 读取运动相关配置(能量/红环/字体),直接读 config.json */
+    private fun loadSportConfig() {
+        val json = try {
+            val file = File("/sdcard/laoli_hooktools/config.json")
+            if (file.exists()) org.json.JSONObject(file.readText()) else org.json.JSONObject()
+        } catch (t: Throwable) {
+            org.json.JSONObject()
+        }
+
+        val energyJson = json.optJSONObject("sport_energy")
+        sportEnergyEnabled = energyJson?.optBoolean("enabled", false) ?: false
+        sportEnergyValue = if (energyJson != null && energyJson.has("value")) {
+            energyJson.optInt("value")
+        } else null
+
+        val ringJson = json.optJSONObject("sport_red_ring")
+        sportRedRingEnabled = ringJson?.optBoolean("enabled", false) ?: false
+        sportRedRingCount = ringJson?.optInt("count", 1)?.coerceIn(1, 20) ?: 1
+
+        val fontJson = json.optJSONObject("sport_font")
+        sportFontEnabled = fontJson?.optBoolean("enabled", false) ?: false
+        sportFontPath = fontJson?.optString("path", null)
+        sportCustomTypeface = null
+
+        val avatarJson = json.optJSONObject("sport_avatar")
+        sportAvatarEnabled = avatarJson?.optBoolean("enabled", false) ?: false
+        sportAvatarPath = avatarJson?.optString("path", null)
+
+        Logger.log(TAG, "运动配置: 能量 enabled=$sportEnergyEnabled value=$sportEnergyValue, 红环=$sportRedRingEnabled, 字体 enabled=$sportFontEnabled path=$sportFontPath, 头像 enabled=$sportAvatarEnabled path=$sportAvatarPath")
+    }
+
+    /** hook 运动应用能量值与一键红环(改 HomeBean getter 返回值) */
+    private fun hookSportEnergyAndRing(app: Application) {
+        Logger.log(TAG, ">>> hookSportEnergyAndRing 开始")
+
+        val homeBeanClass = try {
+            XposedHelpers.findClass("com.xtc.sport.home.bean.HomeBean", app.classLoader)
+        } catch (t: Throwable) {
+            Logger.e(TAG, "找不到 HomeBean", t)
+            return
+        }
+
+        // 能量值修改:统一覆盖多个能量相关 getter
+        if (sportEnergyEnabled && sportEnergyValue != null) {
+            val value = sportEnergyValue!!
+            val methods = arrayOf(
+                "getCurrentEngery",
+                "getCurrentLevelEngery",
+                "getUpgradeEngery",
+                "getEnergyLimit",
+                "getUpperLimit",
+                "getDayLimit"
+            )
+            for (method in methods) {
+                try {
+                    XposedHelpers.findAndHookMethod(
+                        homeBeanClass,
+                        method,
+                        object : XC_MethodHook() {
+                            override fun afterHookedMethod(param: MethodHookParam) {
+                                param.result = value
+                            }
+                        }
+                    )
+                    Logger.log(TAG, "运动能量 hook: HomeBean.$method -> $value")
+                } catch (t: Throwable) {
+                    Logger.log(TAG, "运动能量 hook 跳过(方法可能不存在): $method")
+                }
+            }
+        }
+
+        // 一键红环:运动环是 5 进制等级编码,第 5 级(ic_class_5,红色)需要 level >= 5^4=625。
+        // 直接改 LevelLayout 的渲染参数,不影响虚拟形象与等级数字文本。
+        if (sportRedRingEnabled) {
+            val targetLevel = sportRedRingCount * 625
+            val levelLayoutClass = try {
+                XposedHelpers.findClass("com.xtc.sport.home.widget.LevelLayout", app.classLoader)
+            } catch (t: Throwable) {
+                Logger.e(TAG, "一键红环: 找不到 LevelLayout", t)
+                null
+            }
+            if (levelLayoutClass != null) {
+                // setLevel 有最高位溢出处理,可显示任意数量红环,强制为 targetLevel。
+                try {
+                    XposedHelpers.findAndHookMethod(
+                        levelLayoutClass,
+                        "setLevel",
+                        Int::class.javaPrimitiveType,
+                        object : XC_MethodHook() {
+                            override fun beforeHookedMethod(param: MethodHookParam) {
+                                param.args[0] = targetLevel
+                            }
+                        }
+                    )
+                    Logger.log(TAG, "一键红环 hook: LevelLayout.setLevel -> $targetLevel ($sportRedRingCount 个红环)")
+                } catch (t: Throwable) {
+                    Logger.e(TAG, "一键红环 hook 失败: setLevel", t)
+                }
+
+                // e 是动画增量更新,缺少最高位溢出处理,红环数量 > 4 时会算成 0 把红环清空。
+                // 直接跳过 e,保持 setLevel 设置的红环状态。
+                try {
+                    XposedHelpers.findAndHookMethod(
+                        levelLayoutClass,
+                        "e",
+                        Int::class.javaPrimitiveType,
+                        XC_MethodReplacement.DO_NOTHING
+                    )
+                    Logger.log(TAG, "一键红环 hook: LevelLayout.e 已跳过")
+                } catch (t: Throwable) {
+                    Logger.e(TAG, "一键红环 hook 失败: e", t)
+                }
+            }
+
+            // 虚拟形象周围的光环也达到最高等级(红色)。
+            // 核心:等级字段 j 通过合成方法 g(StaticVirtualSelf,int) 设置,j>=625 才会同时
+            // 显示红色普通光环(k/l)以及第 5 级特殊光环 ivAbove5/ivBelow5。
+            val virtualSelfClass = try {
+                XposedHelpers.findClass("com.xtc.sport.home.widget.virtualself.StaticVirtualSelf", app.classLoader)
+            } catch (t: Throwable) {
+                Logger.e(TAG, "一键红环: 找不到 StaticVirtualSelf", t)
+                null
+            }
+            if (virtualSelfClass != null) {
+                // 1) 直接改等级字段 j = 625(最根本,一次性让所有光环变红)
+                try {
+                    XposedHelpers.findAndHookMethod(
+                        virtualSelfClass,
+                        "g",
+                        virtualSelfClass,
+                        Int::class.javaPrimitiveType,
+                        object : XC_MethodHook() {
+                            override fun beforeHookedMethod(param: MethodHookParam) {
+                                param.args[1] = 625
+                            }
+                        }
+                    )
+                    Logger.log(TAG, "一键红环 hook: StaticVirtualSelf.g -> 625 (等级字段)")
+                } catch (t: Throwable) {
+                    Logger.e(TAG, "一键红环 hook 失败: StaticVirtualSelf.g", t)
+                }
+                // 2) 兜底:普通光环资源选择 k/l 也强制 625
+                for (method in arrayOf("k", "l")) {
+                    try {
+                        XposedHelpers.findAndHookMethod(
+                            virtualSelfClass,
+                            method,
+                            Int::class.javaPrimitiveType,
+                            object : XC_MethodHook() {
+                                override fun beforeHookedMethod(param: MethodHookParam) {
+                                    param.args[0] = 625
+                                }
+                            }
+                        )
+                        Logger.log(TAG, "一键红环 hook: StaticVirtualSelf.$method -> 625 (普通光环)")
+                    } catch (t: Throwable) {
+                        Logger.e(TAG, "一键红环 hook 失败: StaticVirtualSelf.$method", t)
+                    }
+                }
+            }
+
+            // 虚拟形象光环的真正渲染路径是 PAG 动画:
+            // 混淆类 e.o.u.h.s.h.b 的 h(int) 根据等级选 level1~5.pag,level >= 625 才是 level5.pag(红色)。
+            try {
+                val pagSelfClass = XposedHelpers.findClass("e.o.u.h.s.h.b", app.classLoader)
+                XposedHelpers.findAndHookMethod(
+                    pagSelfClass,
+                    "h",
+                    Int::class.javaPrimitiveType,
+                    object : XC_MethodHook() {
+                        override fun beforeHookedMethod(param: MethodHookParam) {
+                            param.args[0] = 625
+                        }
+                    }
+                )
+                Logger.log(TAG, "一键红环 hook: e.o.u.h.s.h.b.h -> 625 (红色光环 PAG)")
+            } catch (t: Throwable) {
+                Logger.e(TAG, "一键红环 hook 失败: e.o.u.h.s.h.b.h", t)
+            }
+        }
+
+        Logger.log(TAG, ">>> hookSportEnergyAndRing 完成")
+    }
+
+    /** hook 运动应用自定义字体(拦截 TextView 构造 + setText 兜底) */
+    private fun hookSportFont(app: Application) {
+        Logger.log(TAG, ">>> hookSportFont 开始")
+        if (!sportFontEnabled) {
+            Logger.log(TAG, ">>> 运动字体未启用,跳过")
+            return
+        }
+
+        val typeface = resolveSportTypeface()
+        if (typeface == null) {
+            Logger.e(TAG, ">>> 运动 Typeface 加载失败,跳过")
+            return
+        }
+
+        val constructors: List<Array<Class<*>>> = listOf(
+            arrayOf(Context::class.java),
+            arrayOf(Context::class.java, android.util.AttributeSet::class.java),
+            arrayOf(Context::class.java, android.util.AttributeSet::class.java, java.lang.Integer.TYPE)
+        )
+
+        for (sig in constructors) {
+            try {
+                XposedHelpers.findAndHookConstructor(
+                    TextView::class.java,
+                    *sig,
+                    object : XC_MethodHook() {
+                        override fun afterHookedMethod(param: MethodHookParam) {
+                            val tv = param.thisObject as? TextView ?: return
+                            val tf = sportCustomTypeface ?: return
+                            try {
+                                tv.typeface = tf
+                            } catch (_: Throwable) {
+                            }
+                        }
+                    }
+                )
+                Logger.log(TAG, ">>> hookSportFont: TextView 构造器 hook 成功: ${sig.joinToString { it.name }}")
+            } catch (t: Throwable) {
+                Logger.e(TAG, ">>> hookSportFont: 构造器 hook 失败: ${t.message}", t)
+            }
+        }
+
+        try {
+            XposedHelpers.findAndHookMethod(
+                TextView::class.java,
+                "setText",
+                CharSequence::class.java,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val tv = param.thisObject as? TextView ?: return
+                        val tf = sportCustomTypeface ?: return
+                        try {
+                            if (tv.typeface !== tf) {
+                                tv.typeface = tf
+                            }
+                        } catch (_: Throwable) {
+                        }
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookSportFont: TextView.setText hook 成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookSportFont: setText hook 失败", t)
+        }
+
+        Logger.log(TAG, ">>> hookSportFont 完成")
+    }
+
+    /**
+     * hook 运动应用自定义虚拟形象头像。
+     *
+     * 虚拟形象头像最终由 PAG 骨骼动画渲染,头像 Bitmap 通过
+     * PAGImage.FromBitmap(Bitmap) 送入 libpag(全应用唯一调用点,
+     * 见 DynamicVirtualSelf$playAnim$1.invokeSuspend)。这里拦截该方法,
+     * 把传入的原始头像 Bitmap 换成用户从相册选择的图片。
+     */
+    private fun hookSportAvatar(app: Application) {
+        Logger.log(TAG, ">>> hookSportAvatar 开始")
+        if (!sportAvatarEnabled) {
+            Logger.log(TAG, ">>> 运动头像未启用,跳过")
+            return
+        }
+        val path = sportAvatarPath
+        if (path.isNullOrEmpty()) {
+            Logger.log(TAG, ">>> 运动头像路径为空,跳过")
+            return
+        }
+
+        try {
+            val pagImageClass = XposedHelpers.findClass("org.libpag.PAGImage", app.classLoader)
+            XposedHelpers.findAndHookMethod(
+                pagImageClass,
+                "FromBitmap",
+                Bitmap::class.java,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        try {
+                            val bmp = BitmapFactory.decodeFile(path)
+                            if (bmp != null) {
+                                param.args[0] = bmp
+                                Logger.log(TAG, ">>> hookSportAvatar: 已替换头像 Bitmap ${bmp.width}x${bmp.height}")
+                            } else {
+                                Logger.log(TAG, ">>> hookSportAvatar: 头像解码失败,保持原头像")
+                            }
+                        } catch (t: Throwable) {
+                            Logger.e(TAG, ">>> hookSportAvatar: 解码头像失败", t)
+                        }
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookSportAvatar: PAGImage.FromBitmap hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookSportAvatar: hook 注册失败", t)
+        }
+
+        Logger.log(TAG, ">>> hookSportAvatar 完成")
+    }
+
+    /** 从配置路径加载运动自定义 Typeface(带缓存) */
+    private fun resolveSportTypeface(): Typeface? {
+        sportCustomTypeface?.let { return it }
+        if (!sportFontEnabled) return null
+        val path = sportFontPath ?: return null
+        return try {
+            val file = File(path)
+            if (!file.exists()) {
+                Logger.e(TAG, ">>> 运动字体文件不存在: $path")
+                null
+            } else {
+                Typeface.createFromFile(file).also {
+                    sportCustomTypeface = it
+                    Logger.log(TAG, ">>> 运动字体加载成功: $path")
+                }
+            }
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> 运动字体加载失败", t)
+            null
         }
     }
 
@@ -392,6 +809,13 @@ class MomentHook :
         val linkJumpJson = json.optJSONObject("link_jump")
         linkJumpEnabled = linkJumpJson?.optBoolean("enabled", false) ?: false
         Logger.log(TAG, "链接自动跳转配置: enabled = $linkJumpEnabled")
+
+        // 加载自定义字体配置
+        val fontJson = json.optJSONObject("custom_font")
+        fontEnabled = fontJson?.optBoolean("enabled", false) ?: false
+        fontPath = fontJson?.optString("path", null)
+        customTypeface = null
+        Logger.log(TAG, "自定义字体配置: enabled = $fontEnabled, path = $fontPath")
 
         Logger.log(TAG, ">>> loadReplacements 完成,共 ${replacements.size} 个图片替换, ${stringReplacements.size} 个 string 替换, ${colorReplacements.size} 个 color 替换")
         for ((k, v) in replacements) {
@@ -1597,6 +2021,107 @@ class MomentHook :
     }
 
     /**
+     * hook 自定义字体:拦截好友圈进程内所有 TextView 的构造,统一设置自定义 Typeface。
+     * 字体文件由模块 UI 拷贝到 /sdcard/laoli_hooktools/custom_font.ttf,
+     * 这里读配置决定是否启用,并缓存 Typeface 避免反复加载。
+     */
+    private fun hookFont(app: Application) {
+        Logger.log(TAG, ">>> hookFont 开始")
+        if (!fontEnabled) {
+            Logger.log(TAG, ">>> hookFont: 字体未启用,跳过")
+            return
+        }
+
+        val typeface = resolveCustomTypeface()
+        if (typeface == null) {
+            Logger.e(TAG, ">>> hookFont: Typeface 加载失败,跳过")
+            return
+        }
+
+        // 三个 TextView 构造器:拦截所有 TextView 子类(含好友圈自定义 View)的创建
+        val constructors: List<Array<Class<*>>> = listOf(
+            arrayOf(Context::class.java),
+            arrayOf(Context::class.java, android.util.AttributeSet::class.java),
+            arrayOf(
+                Context::class.java,
+                android.util.AttributeSet::class.java,
+                java.lang.Integer.TYPE
+            )
+        )
+
+        for (sig in constructors) {
+            try {
+                XposedHelpers.findAndHookConstructor(
+                    TextView::class.java,
+                    *sig,
+                    object : XC_MethodHook() {
+                        override fun afterHookedMethod(param: MethodHookParam) {
+                            val tv = param.thisObject as? TextView ?: return
+                            val tf = customTypeface ?: return
+                            try {
+                                tv.typeface = tf
+                            } catch (_: Throwable) {
+                            }
+                        }
+                    }
+                )
+                Logger.log(TAG, ">>> hookFont: TextView 构造器 hook 注册成功: ${sig.joinToString { it.name }}")
+            } catch (t: Throwable) {
+                Logger.e(TAG, ">>> hookFont: 构造器 hook 注册失败: ${t.message}", t)
+            }
+        }
+
+        // 兜底:hook TextView.setText 后再次应用字体,
+        // 防止某些 View 在 setText 时通过 setTypeface 重置字体。
+        try {
+            XposedHelpers.findAndHookMethod(
+                TextView::class.java,
+                "setText",
+                CharSequence::class.java,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val tv = param.thisObject as? TextView ?: return
+                        val tf = customTypeface ?: return
+                        try {
+                            if (tv.typeface !== tf) {
+                                tv.typeface = tf
+                            }
+                        } catch (_: Throwable) {
+                        }
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookFont: TextView.setText hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookFont: setText hook 注册失败", t)
+        }
+
+        Logger.log(TAG, ">>> hookFont 完成")
+    }
+
+    /** 从配置路径加载自定义 Typeface(带缓存) */
+    private fun resolveCustomTypeface(): Typeface? {
+        customTypeface?.let { return it }
+        if (!fontEnabled) return null
+        val path = fontPath ?: return null
+        return try {
+            val file = File(path)
+            if (!file.exists()) {
+                Logger.e(TAG, ">>> 自定义字体文件不存在: $path")
+                null
+            } else {
+                android.graphics.Typeface.createFromFile(file).also {
+                    customTypeface = it
+                    Logger.log(TAG, ">>> 自定义字体加载成功: $path")
+                }
+            }
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> 自定义字体加载失败", t)
+            null
+        }
+    }
+
+    /**
      * hook 点赞数量修改 + 详情页点赞用户名。
      *
      * 1. 覆盖 DbMoment.getLikeTotal(),返回编辑界面设置的点赞数。
@@ -2277,12 +2802,33 @@ class MomentHook :
     private fun injectMomentButton(dialog: android.app.Dialog?, moment: Any?) {
         if (dialog == null || moment == null) return
         if (moment.javaClass.name != "com.xtc.moment.db.bean.DbMoment") return
+        // 给"取消"按钮(槽位1)注入长按收藏
+        injectFavoriteLongClick(dialog, moment)
         if (isMediaMoment(moment)) {
             // 媒体动态:保存(槽位3) + 编辑(槽位4)
             injectSaveButton(dialog, moment)
             injectEditButton(dialog, moment)
         } else {
             injectEditButton(dialog, moment)
+        }
+    }
+
+    /** 给长按弹窗里的"取消"按钮(槽位1)注入长按收藏 */
+    private fun injectFavoriteLongClick(dialog: android.app.Dialog?, moment: Any?) {
+        if (dialog == null || moment == null) return
+        try {
+            val res = dialog.context.resources
+            val pkg = "com.xtc.moment"
+            val slotRootId = res.getIdentifier("ll_common_one_root", "id", pkg)
+            if (slotRootId == 0) return
+            val slotRoot = dialog.findViewById<LinearLayout>(slotRootId) ?: return
+            slotRoot.setOnLongClickListener {
+                favoriteMoment(dialog.context, moment)
+                true
+            }
+            Logger.log(TAG, ">>> hookFavorite: 已给取消按钮注入长按收藏")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookFavorite: 注入长按收藏失败", t)
         }
     }
 
@@ -2413,16 +2959,17 @@ class MomentHook :
         return null
     }
 
-    /** 图片/视频长按弹"编辑/保存/取消/举报"弹窗(替代原"取消/举报") */
+    /** 图片/视频长按弹"编辑/保存/收藏/取消/举报"弹窗(替代原"取消/举报") */
     private fun showSaveReportDialog(view: View, moment: Any, reportCallback: Any?) {
         val context = view.context
         try {
             AlertDialog.Builder(context)
-                .setItems(arrayOf("编辑", "保存", "取消", "举报")) { _, which ->
+                .setItems(arrayOf("编辑", "保存", "收藏", "取消", "举报")) { _, which ->
                     when (which) {
                         0 -> launchEditActivity(context, moment)
                         1 -> saveMomentMedia(context, moment)
-                        3 -> {
+                        2 -> favoriteMoment(context, moment)
+                        4 -> {
                             if (reportCallback != null) {
                                 try {
                                     XposedHelpers.callMethod(reportCallback, "onRightBtnClick")
@@ -2513,6 +3060,153 @@ class MomentHook :
             } catch (t: Throwable) {
                 Logger.e(TAG, ">>> hookSaveMedia: 保存失败", t)
                 postToast(context, "保存失败: ${t.message}")
+            }
+        }.start()
+    }
+
+    /** 提取动态的媒体下载地址(返回 URL 列表 + 是否视频) */
+    private fun extractMediaUrls(moment: Any): Pair<List<String>, Boolean> {
+        val app = targetApp ?: return emptyList<String>() to false
+        return try {
+            val type = XposedHelpers.callMethod(moment, "getType") as? Int ?: 0
+            val content = XposedHelpers.callMethod(moment, "getContent") as? String ?: ""
+            val encodeG = XposedHelpers.findClass("com.xtc.utils.encode.g", app.classLoader)
+            val urls = mutableListOf<String>()
+            var isVideo = false
+            fun addUrl(u: String?) {
+                u?.split(",")?.forEach { if (it.isNotBlank()) urls.add(it) }
+            }
+            when (type) {
+                6, 13, 24, 27 -> {
+                    isVideo = true
+                    val videoClass = XposedHelpers.findClass("com.xtc.moment.module.bean.VideoMsg", app.classLoader)
+                    var videoJson = content
+                    if (type == 27) {
+                        val multiClass = XposedHelpers.findClass("com.xtc.moment.module.bean.MultiPhotoContent", app.classLoader)
+                        val multi = XposedHelpers.callStaticMethod(encodeG, "a", content, multiClass)
+                        if (multi != null) {
+                            videoJson = XposedHelpers.callMethod(multi, "getVideoMsgContent") as? String ?: content
+                        }
+                    }
+                    val video = XposedHelpers.callStaticMethod(encodeG, "a", videoJson, videoClass)
+                    if (video != null) {
+                        addUrl(resourceDownloadUrl(XposedHelpers.callMethod(video, "getTransfer"))
+                            ?: resourceDownloadUrl(XposedHelpers.callMethod(video, "getSource")))
+                    }
+                }
+                26, 28 -> {
+                    val multiClass = XposedHelpers.findClass("com.xtc.moment.module.bean.MultiPhotoContent", app.classLoader)
+                    val multi = XposedHelpers.callStaticMethod(encodeG, "a", content, multiClass)
+                    if (multi != null) {
+                        addUrl(resourceDownloadUrl(XposedHelpers.callMethod(multi, "getResource")))
+                    }
+                }
+                else -> {
+                    val photoClass = XposedHelpers.findClass("com.xtc.moment.module.bean.PhotoMsg", app.classLoader)
+                    val photo = XposedHelpers.callStaticMethod(encodeG, "a", content, photoClass)
+                    if (photo != null) {
+                        addUrl(resourceDownloadUrl(XposedHelpers.callMethod(photo, "getSource"))
+                            ?: resourceDownloadUrl(XposedHelpers.callMethod(photo, "getSmallPic")))
+                    }
+                }
+            }
+            urls to isVideo
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookFavorite: 提取媒体链接失败", t)
+            emptyList<String>() to false
+        }
+    }
+
+    /** 提取动态文字(媒体动态优先 description,文本动态用 content) */
+    private fun extractMomentText(moment: Any, media: Boolean): String {
+        val desc = try {
+            XposedHelpers.callMethod(moment, "getDescription") as? String
+        } catch (_: Throwable) {
+            null
+        }
+        if (!desc.isNullOrBlank()) return desc
+        if (!media) {
+            return try {
+                XposedHelpers.callMethod(moment, "getContent") as? String ?: ""
+            } catch (_: Throwable) {
+                ""
+            }
+        }
+        return ""
+    }
+
+    /** 下载 url 到指定文件 */
+    private fun downloadToFile(urlStr: String, dest: File): Boolean {
+        return try {
+            val url = URL(urlStr)
+            val conn = url.openConnection() as HttpURLConnection
+            conn.connectTimeout = 15000
+            conn.readTimeout = 60000
+            conn.requestMethod = "GET"
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0")
+            conn.connect()
+            if (conn.responseCode != 200) {
+                conn.disconnect()
+                return false
+            }
+            val bytes = conn.inputStream.use { it.readBytes() }
+            conn.disconnect()
+            if (bytes.isEmpty()) return false
+            dest.parentFile?.mkdirs()
+            dest.writeBytes(bytes)
+            true
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookFavorite: 下载失败 url=$urlStr", t)
+            false
+        }
+    }
+
+    /** 收藏动态:保存文字与媒体到本地,并写入 FavoriteStore */
+    private fun favoriteMoment(context: Context, moment: Any) {
+        Thread {
+            try {
+                val momentId = XposedHelpers.callMethod(moment, "getMomentId") as? String ?: ""
+                if (momentId.isEmpty()) {
+                    postToast(context, "收藏失败：动态 ID 缺失")
+                    return@Thread
+                }
+                if (FavoriteStore.contains(momentId)) {
+                    postToast(context, "已收藏过该动态")
+                    return@Thread
+                }
+                val name = XposedHelpers.callMethod(moment, "getName") as? String ?: ""
+                val type = XposedHelpers.callMethod(moment, "getType") as? Int ?: 0
+                val createTime = (XposedHelpers.callMethod(moment, "getCreateTime") as? Long) ?: System.currentTimeMillis()
+                val iconUrl = try {
+                    XposedHelpers.callMethod(moment, "getIconPath") as? String
+                } catch (_: Throwable) {
+                    null
+                }
+                val likeCount = (XposedHelpers.callMethod(moment, "getLikeTotal") as? Int) ?: 0
+                val commentCount = (XposedHelpers.callMethod(moment, "getCommentsTotalCount") as? Int) ?: 0
+                val media = isMediaMoment(moment)
+                val text = extractMomentText(moment, media)
+
+                val dir = FavoriteStore.dirOf(momentId)
+                dir.mkdirs()
+                File(dir, "text.txt").writeText(text)
+
+                val mediaFiles = mutableListOf<String>()
+                if (media) {
+                    val (urls, isVideo) = extractMediaUrls(moment)
+                    urls.forEachIndexed { i, url ->
+                        val fileName = if (isVideo) "video_$i.mp4" else "image_$i.jpg"
+                        if (downloadToFile(url, File(dir, fileName))) {
+                            mediaFiles.add(fileName)
+                        }
+                    }
+                }
+
+                FavoriteStore.add(FavoriteStore.FavoriteMoment(momentId, name, text, type, createTime, likeCount, commentCount, iconUrl, mediaFiles))
+                postToast(context, "已收藏")
+            } catch (t: Throwable) {
+                Logger.e(TAG, ">>> hookFavorite: 收藏失败", t)
+                postToast(context, "收藏失败: ${t.message}")
             }
         }.start()
     }
