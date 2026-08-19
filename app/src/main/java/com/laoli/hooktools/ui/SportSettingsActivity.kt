@@ -1,6 +1,7 @@
 package com.laoli.hooktools.ui
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
@@ -59,8 +60,21 @@ class SportSettingsActivity : AppCompatActivity() {
     private lateinit var btnSelectAvatar: MaterialButton
     private lateinit var btnClearAvatar: MaterialButton
 
+    // 排行榜:自定义排名
+    private lateinit var switchRank: MaterialSwitch
+    private lateinit var etRankValue: EditText
+    private lateinit var btnSaveRank: MaterialButton
+
+    // 排行榜:自定义能量
+    private lateinit var switchRankEnergy: MaterialSwitch
+    private lateinit var etRankEnergyValue: EditText
+    private lateinit var btnSaveRankEnergy: MaterialButton
+
     // 重启运动
     private lateinit var btnRestart: MaterialButton
+
+    // 一键恢复
+    private lateinit var btnResetAll: MaterialButton
 
     /** 字体文件选择回调 */
     private val pickFontLauncher = registerForActivityResult(
@@ -120,7 +134,14 @@ class SportSettingsActivity : AppCompatActivity() {
         tvAvatarState = findViewById(R.id.tvAvatarState)
         btnSelectAvatar = findViewById(R.id.btnSelectAvatar)
         btnClearAvatar = findViewById(R.id.btnClearAvatar)
+        switchRank = findViewById(R.id.switchRank)
+        etRankValue = findViewById(R.id.etRankValue)
+        btnSaveRank = findViewById(R.id.btnSaveRank)
+        switchRankEnergy = findViewById(R.id.switchRankEnergy)
+        etRankEnergyValue = findViewById(R.id.etRankEnergyValue)
+        btnSaveRankEnergy = findViewById(R.id.btnSaveRankEnergy)
         btnRestart = findViewById(R.id.btnRestart)
+        btnResetAll = findViewById(R.id.btnResetAll)
     }
 
     private fun setupListeners() {
@@ -132,7 +153,10 @@ class SportSettingsActivity : AppCompatActivity() {
         btnClearFont.addPressScale()
         btnSelectAvatar.addPressScale()
         btnClearAvatar.addPressScale()
+        btnSaveRank.addPressScale()
+        btnSaveRankEnergy.addPressScale()
         btnRestart.addPressScale()
+        btnResetAll.addPressScale()
 
         btnBack.setOnClickListener {
             finish()
@@ -207,8 +231,48 @@ class SportSettingsActivity : AppCompatActivity() {
             clearAvatar()
         }
 
+        switchRank.setOnCheckedChangeListener { _, isChecked ->
+            prefs.setSportRankEnabled(isChecked)
+        }
+        btnSaveRank.setOnClickListener {
+            val text = etRankValue.text?.toString()?.trim().orEmpty()
+            val rank = text.toIntOrNull()
+            if (rank == null || rank < 1 || rank > 99) {
+                Toast.makeText(this, R.string.sport_rank_value_hint, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            prefs.setSportRankValue(rank)
+            if (!prefs.isSportRankEnabled()) {
+                prefs.setSportRankEnabled(true)
+                switchRank.isChecked = true
+            }
+            Toast.makeText(this, R.string.toast_saved_success, Toast.LENGTH_SHORT).show()
+        }
+
+        switchRankEnergy.setOnCheckedChangeListener { _, isChecked ->
+            prefs.setSportRankEnergyEnabled(isChecked)
+        }
+        btnSaveRankEnergy.setOnClickListener {
+            val text = etRankEnergyValue.text?.toString()?.trim().orEmpty()
+            val energy = text.toIntOrNull()
+            if (energy == null || energy < 0) {
+                Toast.makeText(this, R.string.sport_rank_energy_hint, Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            prefs.setSportRankEnergyValue(energy)
+            if (!prefs.isSportRankEnergyEnabled()) {
+                prefs.setSportRankEnergyEnabled(true)
+                switchRankEnergy.isChecked = true
+            }
+            Toast.makeText(this, R.string.toast_saved_success, Toast.LENGTH_SHORT).show()
+        }
+
         btnRestart.setOnClickListener {
             forceRestartSport()
+        }
+
+        btnResetAll.setOnClickListener {
+            confirmResetAllSport()
         }
     }
 
@@ -220,6 +284,12 @@ class SportSettingsActivity : AppCompatActivity() {
         etRingCount.setText(prefs.getSportRedRingCount().toString())
         refreshFontCard()
         refreshAvatarCard()
+        switchRank.isChecked = prefs.isSportRankEnabled()
+        val rankValue = prefs.getSportRankValue()
+        etRankValue.setText(if (rankValue != null) rankValue.toString() else "")
+        switchRankEnergy.isChecked = prefs.isSportRankEnergyEnabled()
+        val rankEnergyValue = prefs.getSportRankEnergyValue()
+        etRankEnergyValue.setText(if (rankEnergyValue != null) rankEnergyValue.toString() else "")
     }
 
     // ---------- 自定义字体 ----------
@@ -514,6 +584,56 @@ class SportSettingsActivity : AppCompatActivity() {
         prefs.setSportAvatarPath(null)
         prefs.setSportAvatarEnabled(false)
         refreshAvatarCard()
+    }
+
+    // ---------- 一键恢复 ----------
+
+    private fun confirmResetAllSport() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.sport_reset_all)
+            .setMessage(R.string.sport_reset_all_confirm)
+            .setPositiveButton(R.string.confirm) { _, _ -> resetAllSport() }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun resetAllSport() {
+        // 能量值
+        prefs.setSportEnergyEnabled(false)
+        prefs.setSportEnergyValue(null)
+
+        // 一键红环
+        prefs.setSportRedRingEnabled(false)
+        prefs.setSportRedRingCount(1)
+
+        // 运动字体
+        try {
+            val fontPath = prefs.getSportFontPath()
+            if (!fontPath.isNullOrEmpty()) File(fontPath).delete()
+        } catch (_: Throwable) {
+        }
+        prefs.setSportFontPath(null)
+        prefs.setSportFontEnabled(false)
+
+        // 虚拟头像
+        try {
+            val avatarPath = prefs.getSportAvatarPath()
+            if (!avatarPath.isNullOrEmpty()) File(avatarPath).delete()
+        } catch (_: Throwable) {
+        }
+        prefs.setSportAvatarPath(null)
+        prefs.setSportAvatarEnabled(false)
+
+        // 排行榜:自定义排名
+        prefs.setSportRankEnabled(false)
+        prefs.setSportRankValue(null)
+
+        // 排行榜:自定义能量
+        prefs.setSportRankEnergyEnabled(false)
+        prefs.setSportRankEnergyValue(null)
+
+        refreshAll()
+        Toast.makeText(this, R.string.sport_reset_all_done, Toast.LENGTH_SHORT).show()
     }
 
     // ---------- 重启运动 ----------

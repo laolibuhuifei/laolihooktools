@@ -148,6 +148,15 @@
             android:text="@string/sport_settings_title"
             app:cornerRadius="@dimen/card_radius_small" />
 
+        <!-- 个人中心设置入口 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPersonalCenterSettings"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/btn_height"
+            android:layout_marginTop="@dimen/space_sm"
+            android:text="@string/pc_settings_title"
+            app:cornerRadius="@dimen/card_radius_small" />
+
         <!-- 适配应用下载入口 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnApps"

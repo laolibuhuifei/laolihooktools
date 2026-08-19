@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 运动设置页:能量值修改、一键红环、自定义字体 -->
+<!-- 个人中心设置页:昵称、积分、实名、账号 id、自定义字体 -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -36,12 +36,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/sport_settings_title"
+                android:text="@string/pc_settings_title"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textColor="@color/md_on_surface" />
         </LinearLayout>
 
-        <!-- 能量值修改卡片 -->
+        <!-- 昵称卡片 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/sport_energy_title"
+                    android:text="@string/pc_name_title"
                     android:textAppearance="?attr/textAppearanceTitleSmall"
                     android:textColor="@color/md_on_surface" />
 
@@ -71,39 +71,39 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_xs"
                     android:gravity="center"
-                    android:text="@string/sport_energy_desc"
+                    android:text="@string/pc_name_desc"
                     android:textAppearance="?attr/textAppearanceLabelSmall"
                     android:textColor="@color/md_on_surface_variant" />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/switchEnergy"
+                    android:id="@+id/switchName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/space_sm" />
 
                 <EditText
-                    android:id="@+id/etEnergyValue"
+                    android:id="@+id/etNameValue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_sm"
-                    android:hint="@string/sport_energy_hint"
-                    android:inputType="number"
+                    android:hint="@string/pc_name_hint"
+                    android:inputType="text"
                     android:textColor="@color/md_on_surface"
                     android:textColorHint="@color/md_on_surface_variant"
                     android:textAppearance="?attr/textAppearanceBodyMedium" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSaveEnergy"
+                    android:id="@+id/btnSaveName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_sm"
-                    android:text="@string/sport_energy_save"
+                    android:text="@string/pc_name_save"
                     app:cornerRadius="@dimen/card_radius_small" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 一键红环卡片 -->
+        <!-- 积分卡片 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -124,7 +124,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/sport_red_ring_title"
+                    android:text="@string/pc_score_title"
                     android:textAppearance="?attr/textAppearanceTitleSmall"
                     android:textColor="@color/md_on_surface" />
 
@@ -133,39 +133,39 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_xs"
                     android:gravity="center"
-                    android:text="@string/sport_red_ring_desc"
+                    android:text="@string/pc_score_desc"
                     android:textAppearance="?attr/textAppearanceLabelSmall"
                     android:textColor="@color/md_on_surface_variant" />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/switchRedRing"
+                    android:id="@+id/switchScore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/space_sm" />
 
                 <EditText
-                    android:id="@+id/etRingCount"
+                    android:id="@+id/etScoreValue"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_sm"
-                    android:hint="@string/sport_ring_count_hint"
+                    android:hint="@string/pc_score_hint"
                     android:inputType="number"
                     android:textColor="@color/md_on_surface"
                     android:textColorHint="@color/md_on_surface_variant"
                     android:textAppearance="?attr/textAppearanceBodyMedium" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSaveRingCount"
+                    android:id="@+id/btnSaveScore"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_sm"
-                    android:text="@string/sport_ring_count_save"
+                    android:text="@string/pc_score_save"
                     app:cornerRadius="@dimen/card_radius_small" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 运动自定义字体卡片 -->
+        <!-- 实名卡片 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -186,7 +186,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="@string/sport_font_title"
+                    android:text="@string/pc_realname_title"
                     android:textAppearance="?attr/textAppearanceTitleSmall"
                     android:textColor="@color/md_on_surface" />
 
@@ -195,7 +195,297 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/space_xs"
                     android:gravity="center"
-                    android:text="@string/sport_font_desc"
+                    android:text="@string/pc_realname_desc"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="@color/md_on_surface_variant" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchRealName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/space_sm" />
+
+                <EditText
+                    android:id="@+id/etRealNameValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:hint="@string/pc_realname_hint"
+                    android:inputType="text"
+                    android:textColor="@color/md_on_surface"
+                    android:textColorHint="@color/md_on_surface_variant"
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveRealName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:text="@string/pc_realname_save"
+                    app:cornerRadius="@dimen/card_radius_small" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 昵称颜色卡片 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            app:cardBackgroundColor="@color/md_surface"
+            app:cardCornerRadius="@dimen/card_radius"
+            app:cardElevation="@dimen/card_elevation"
+            app:strokeColor="@color/md_outline_variant"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/space_lg">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/pc_name_color_title"
+                    android:textAppearance="?attr/textAppearanceTitleSmall"
+                    android:textColor="@color/md_on_surface" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:gravity="center"
+                    android:text="@string/pc_name_color_desc"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="@color/md_on_surface_variant" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchNameColor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/space_sm" />
+
+                <TextView
+                    android:id="@+id/tvNameColorState"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:gravity="center"
+                    android:text="@string/color_not_set"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/md_on_surface_variant" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/llNameColorSwatches"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <EditText
+                    android:id="@+id/etNameColor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:hint="@string/color_value_hint"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textColor="@color/md_on_surface"
+                    android:textColorHint="@color/md_on_surface_variant"
+                    android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSaveNameColor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:text="@string/pc_name_color_save"
+                    app:cornerRadius="@dimen/card_radius_small" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 个人中心背景卡片 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            app:cardBackgroundColor="@color/md_surface"
+            app:cardCornerRadius="@dimen/card_radius"
+            app:cardElevation="@dimen/card_elevation"
+            app:strokeColor="@color/md_outline_variant"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/space_lg">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/pc_bg_title"
+                    android:textAppearance="?attr/textAppearanceTitleSmall"
+                    android:textColor="@color/md_on_surface" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:gravity="center"
+                    android:text="@string/pc_bg_desc"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="@color/md_on_surface_variant" />
+
+                <!-- 男生背景 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:gravity="center"
+                    android:text="@string/pc_bg_boy_title"
+                    android:textAppearance="?attr/textAppearanceTitleSmall"
+                    android:textColor="@color/md_on_surface" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:gravity="center"
+                    android:text="@string/pc_bg_boy_desc"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="@color/md_on_surface_variant" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchBgBoy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/space_sm" />
+
+                <TextView
+                    android:id="@+id/tvBgBoyState"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:gravity="center"
+                    android:text="@string/image_not_set"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/md_on_surface_variant" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSelectBgBoy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:text="@string/select_image"
+                    app:cornerRadius="@dimen/card_radius_small" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnClearBgBoy"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:text="@string/clear_image"
+                    app:cornerRadius="@dimen/card_radius_small" />
+
+                <!-- 女生背景 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_md"
+                    android:gravity="center"
+                    android:text="@string/pc_bg_girl_title"
+                    android:textAppearance="?attr/textAppearanceTitleSmall"
+                    android:textColor="@color/md_on_surface" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:gravity="center"
+                    android:text="@string/pc_bg_girl_desc"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="@color/md_on_surface_variant" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchBgGirl"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/space_sm" />
+
+                <TextView
+                    android:id="@+id/tvBgGirlState"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:gravity="center"
+                    android:text="@string/image_not_set"
+                    android:textAppearance="?attr/textAppearanceLabelMedium"
+                    android:textColor="@color/md_on_surface_variant" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSelectBgGirl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:text="@string/select_image"
+                    app:cornerRadius="@dimen/card_radius_small" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnClearBgGirl"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_sm"
+                    android:text="@string/clear_image"
+                    app:cornerRadius="@dimen/card_radius_small" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 个人中心自定义字体卡片 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/space_md"
+            app:cardBackgroundColor="@color/md_surface"
+            app:cardCornerRadius="@dimen/card_radius"
+            app:cardElevation="@dimen/card_elevation"
+            app:strokeColor="@color/md_outline_variant"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/space_lg">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/pc_font_title"
+                    android:textAppearance="?attr/textAppearanceTitleSmall"
+                    android:textColor="@color/md_on_surface" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/space_xs"
+                    android:gravity="center"
+                    android:text="@string/pc_font_desc"
                     android:textAppearance="?attr/textAppearanceLabelSmall"
                     android:textColor="@color/md_on_surface_variant" />
 
@@ -245,208 +535,13 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 自定义虚拟头像卡片 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
-            app:cardBackgroundColor="@color/md_surface"
-            app:cardCornerRadius="@dimen/card_radius"
-            app:cardElevation="@dimen/card_elevation"
-            app:strokeColor="@color/md_outline_variant"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/space_lg">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/sport_avatar_title"
-                    android:textAppearance="?attr/textAppearanceTitleSmall"
-                    android:textColor="@color/md_on_surface" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_xs"
-                    android:gravity="center"
-                    android:text="@string/sport_avatar_desc"
-                    android:textAppearance="?attr/textAppearanceLabelSmall"
-                    android:textColor="@color/md_on_surface_variant" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/switchAvatar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/space_sm" />
-
-                <TextView
-                    android:id="@+id/tvAvatarState"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_xs"
-                    android:gravity="center"
-                    android:text="@string/image_not_set"
-                    android:textAppearance="?attr/textAppearanceLabelMedium"
-                    android:textColor="@color/md_on_surface_variant" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSelectAvatar"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_sm"
-                    android:text="@string/select_image"
-                    app:cornerRadius="@dimen/card_radius_small" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnClearAvatar"
-                    style="?attr/materialButtonOutlinedStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_sm"
-                    android:text="@string/clear_image"
-                    app:cornerRadius="@dimen/card_radius_small" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 自定义排名卡片 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
-            app:cardBackgroundColor="@color/md_surface"
-            app:cardCornerRadius="@dimen/card_radius"
-            app:cardElevation="@dimen/card_elevation"
-            app:strokeColor="@color/md_outline_variant"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/space_lg">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/sport_rank_title"
-                    android:textAppearance="?attr/textAppearanceTitleSmall"
-                    android:textColor="@color/md_on_surface" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_xs"
-                    android:gravity="center"
-                    android:text="@string/sport_rank_desc"
-                    android:textAppearance="?attr/textAppearanceLabelSmall"
-                    android:textColor="@color/md_on_surface_variant" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/switchRank"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/space_sm" />
-
-                <EditText
-                    android:id="@+id/etRankValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_sm"
-                    android:hint="@string/sport_rank_value_hint"
-                    android:inputType="number"
-                    android:textColor="@color/md_on_surface"
-                    android:textColorHint="@color/md_on_surface_variant"
-                    android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSaveRank"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_sm"
-                    android:text="@string/sport_rank_save"
-                    app:cornerRadius="@dimen/card_radius_small" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 自定义能量卡片 -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/space_md"
-            app:cardBackgroundColor="@color/md_surface"
-            app:cardCornerRadius="@dimen/card_radius"
-            app:cardElevation="@dimen/card_elevation"
-            app:strokeColor="@color/md_outline_variant"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/space_lg">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="@string/sport_rank_energy_title"
-                    android:textAppearance="?attr/textAppearanceTitleSmall"
-                    android:textColor="@color/md_on_surface" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_xs"
-                    android:gravity="center"
-                    android:text="@string/sport_rank_energy_desc"
-                    android:textAppearance="?attr/textAppearanceLabelSmall"
-                    android:textColor="@color/md_on_surface_variant" />
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/switchRankEnergy"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/space_sm" />
-
-                <EditText
-                    android:id="@+id/etRankEnergyValue"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_sm"
-                    android:hint="@string/sport_rank_energy_hint"
-                    android:inputType="number"
-                    android:textColor="@color/md_on_surface"
-                    android:textColorHint="@color/md_on_surface_variant"
-                    android:textAppearance="?attr/textAppearanceBodyMedium" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSaveRankEnergy"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/space_sm"
-                    android:text="@string/sport_rank_energy_save"
-                    app:cornerRadius="@dimen/card_radius_small" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- 重启运动 -->
+        <!-- 重启个人中心 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRestart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_md"
-            android:text="@string/restart_sport"
+            android:text="@string/restart_pc"
             app:cornerRadius="@dimen/card_radius_small" />
 
         <!-- 一键恢复 -->
@@ -456,7 +551,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/space_sm"
-            android:text="@string/sport_reset_all"
+            android:text="@string/pc_reset_all"
             app:cornerRadius="@dimen/card_radius_small" />
     </LinearLayout>
 </ScrollView>

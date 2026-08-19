@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     // 操作
     private lateinit var btnFriendCircleSettings: MaterialButton
     private lateinit var btnSportSettings: MaterialButton
+    private lateinit var btnPersonalCenterSettings: MaterialButton
     private lateinit var btnApps: MaterialButton
     private lateinit var btnFontCenter: MaterialButton
     private lateinit var btnModuleFont: MaterialButton
@@ -113,6 +114,7 @@ class MainActivity : AppCompatActivity() {
         detailContainer = findViewById(R.id.detailContainer)
         btnFriendCircleSettings = findViewById(R.id.btnFriendCircleSettings)
         btnSportSettings = findViewById(R.id.btnSportSettings)
+        btnPersonalCenterSettings = findViewById(R.id.btnPersonalCenterSettings)
         btnApps = findViewById(R.id.btnApps)
         btnFontCenter = findViewById(R.id.btnFontCenter)
         btnModuleFont = findViewById(R.id.btnModuleFont)
@@ -131,6 +133,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupListeners() {
         btnFriendCircleSettings.addPressScale()
         btnSportSettings.addPressScale()
+        btnPersonalCenterSettings.addPressScale()
         btnApps.addPressScale()
         btnFontCenter.addPressScale()
         btnModuleFont.addPressScale()
@@ -144,6 +147,10 @@ class MainActivity : AppCompatActivity() {
         }
         btnSportSettings.setOnClickListener {
             startActivity(Intent(this, SportSettingsActivity::class.java))
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        }
+        btnPersonalCenterSettings.setOnClickListener {
+            startActivity(Intent(this, PersonalCenterSettingsActivity::class.java))
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         }
         btnApps.setOnClickListener {

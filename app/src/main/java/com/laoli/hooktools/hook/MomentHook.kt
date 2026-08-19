@@ -32,6 +32,7 @@ import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.IXposedHookZygoteInit
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XC_MethodReplacement
+import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XposedHelpers
 import de.robv.android.xposed.callbacks.XC_InitPackageResources
 import de.robv.android.xposed.callbacks.XC_LoadPackage
@@ -143,6 +144,82 @@ class MomentHook :
         @Volatile
         private var sportAvatarPath: String? = null
 
+        /** 运动:排行榜自定义排名是否启用 */
+        @Volatile
+        private var sportRankEnabled = false
+
+        /** 运动:排行榜自定义排名值(1~99) */
+        @Volatile
+        private var sportRankValue: Int? = null
+
+        /** 运动:排行榜自定义能量是否启用 */
+        @Volatile
+        private var sportRankEnergyEnabled = false
+
+        /** 运动:排行榜自定义能量值(g) */
+        @Volatile
+        private var sportRankEnergyValue: Int? = null
+
+        /** 个人中心:昵称修改是否启用 */
+        @Volatile
+        private var pcNameEnabled = false
+
+        /** 个人中心:自定义昵称 */
+        @Volatile
+        private var pcNameValue: String? = null
+
+        /** 个人中心:积分修改是否启用 */
+        @Volatile
+        private var pcScoreEnabled = false
+
+        /** 个人中心:自定义积分 */
+        @Volatile
+        private var pcScoreValue: Int? = null
+
+        /** 个人中心:实名修改是否启用 */
+        @Volatile
+        private var pcRealNameEnabled = false
+
+        /** 个人中心:自定义实名 */
+        @Volatile
+        private var pcRealNameValue: String? = null
+
+        /** 个人中心:自定义字体是否启用 */
+        @Volatile
+        private var pcFontEnabled = false
+
+        /** 个人中心:自定义字体文件路径 */
+        @Volatile
+        private var pcFontPath: String? = null
+
+        /** 个人中心:已加载的自定义 Typeface(缓存) */
+        @Volatile
+        private var pcCustomTypeface: Typeface? = null
+
+        /** 个人中心:昵称颜色是否启用 */
+        @Volatile
+        private var pcNameColorEnabled = false
+
+        /** 个人中心:昵称颜色值(#RRGGBB 或 #AARRGGBB) */
+        @Volatile
+        private var pcNameColorValue: String? = null
+
+        /** 个人中心:男生背景是否启用 */
+        @Volatile
+        private var pcBgBoyEnabled = false
+
+        /** 个人中心:男生背景图片路径 */
+        @Volatile
+        private var pcBgBoyPath: String? = null
+
+        /** 个人中心:女生背景是否启用 */
+        @Volatile
+        private var pcBgGirlEnabled = false
+
+        /** 个人中心:女生背景图片路径 */
+        @Volatile
+        private var pcBgGirlPath: String? = null
+
         /** URL 匹配正则(http/https/www) */
         private val URL_PATTERN = Pattern.compile(
             "((https?://|www\\.)[\\w\\-._~:/?#\\[\\]@!&'()*+,;=%]+)",
@@ -156,6 +233,9 @@ class MomentHook :
         private const val ANTI_DELETE_MARK = "[已成功拦截删除的动态😋] "
 
         private var recordDebugCount = 0
+
+        /** 排行榜 hook 调试计数(限制日志量) */
+        private var rankDebugCount = 0
 
         /** 当前长按的动态(供弹窗注入编辑按钮时读取) */
         @Volatile
@@ -190,7 +270,7 @@ class MomentHook :
         // 先判断包名:非目标包/模块包直接返回。
         // 避免在 system_server 等系统早期进程写文件日志导致开机卡第一屏。
         val pkg = lpparam.packageName
-        if (pkg != Constants.TARGET_PACKAGE && pkg != Constants.SPORT_PACKAGE && pkg != Constants.MODULE_PACKAGE) {
+        if (pkg != Constants.TARGET_PACKAGE && pkg != Constants.SPORT_PACKAGE && pkg != Constants.PERSONAL_CENTER_PACKAGE && pkg != Constants.MODULE_PACKAGE) {
             return
         }
 
@@ -210,6 +290,10 @@ class MomentHook :
                 Logger.log(TAG, ">>> 进入运动进程")
                 handleSportTarget(lpparam)
             }
+            Constants.PERSONAL_CENTER_PACKAGE -> {
+                Logger.log(TAG, ">>> 进入个人中心进程")
+                handlePersonalCenterTarget(lpparam)
+            }
             else -> {
                 Logger.log(TAG, ">>> 进入模块自身进程")
                 handleSelf(lpparam)
@@ -218,18 +302,65 @@ class MomentHook :
     }
 
     override fun handleInitPackageResources(resparam: XC_InitPackageResources.InitPackageResourcesParam) {
-        // 先判断包名:非目标包直接返回,避免系统早期进程写文件日志阻塞。
-        if (resparam.packageName != Constants.TARGET_PACKAGE) {
+        val pkg = resparam.packageName
+        // 只处理好友圈和个人中心,避免系统早期进程写文件日志阻塞。
+        if (pkg != Constants.TARGET_PACKAGE && pkg != Constants.PERSONAL_CENTER_PACKAGE) {
             return
         }
 
         Logger.log(TAG, "======== handleInitPackageResources ========")
-        Logger.log(TAG, "packageName = ${resparam.packageName}")
+        Logger.log(TAG, "packageName = $pkg")
         Logger.log(TAG, "res class = ${resparam.res.javaClass.name}")
-        Logger.log(TAG, "res = $resparam.res")
 
-        Logger.log(TAG, ">>> 开始注册资源替换(setReplacement 方式)")
-        registerReplacements(resparam.res)
+        if (pkg == Constants.TARGET_PACKAGE) {
+            Logger.log(TAG, ">>> 好友圈: 注册资源替换(setReplacement 方式)")
+            registerReplacements(resparam.res)
+        } else {
+            Logger.log(TAG, ">>> 个人中心: 注册背景替换(setReplacement 方式)")
+            registerPersonalBackgroundReplacements(resparam.res)
+        }
+    }
+
+    /** 个人中心背景资源替换(zygote 阶段 setReplacement,与好友圈背景同一机制) */
+    private fun registerPersonalBackgroundReplacements(res: XResources) {
+        Logger.log(TAG, ">>> registerPersonalBackgroundReplacements 开始")
+
+        val json = try {
+            val file = File("/sdcard/laoli_hooktools/config.json")
+            if (file.exists()) org.json.JSONObject(file.readText()) else org.json.JSONObject()
+        } catch (t: Throwable) {
+            org.json.JSONObject()
+        }
+
+        registerPersonalBgReplacement(res, json, "bg_gender_boy", "pc_bg_boy")
+        registerPersonalBgReplacement(res, json, "bg_gender_girl", "pc_bg_girl")
+
+        Logger.log(TAG, ">>> registerPersonalBackgroundReplacements 完成")
+    }
+
+    private fun registerPersonalBgReplacement(
+        res: XResources,
+        json: org.json.JSONObject,
+        resName: String,
+        configKey: String
+    ) {
+        val cfg = json.optJSONObject(configKey) ?: return
+        if (!cfg.optBoolean("enabled", false)) return
+        val path = cfg.optString("path", null)
+        if (path.isNullOrEmpty()) return
+        try {
+            res.setReplacement(
+                Constants.PERSONAL_CENTER_PACKAGE, "drawable", resName,
+                object : XResources.DrawableLoader() {
+                    override fun newDrawable(targetRes: XResources, id: Int): Drawable {
+                        return createDrawableFromFile(targetRes, path)
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> 个人中心背景 setReplacement 注册成功: $resName <- $path")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> 个人中心背景 setReplacement '$resName' 失败", t)
+        }
     }
 
     // ---------- 目标进程:好友圈 ----------
@@ -323,6 +454,583 @@ class MomentHook :
 
     // ---------- 目标进程:运动应用 ----------
 
+    // ---------- 目标进程:个人中心 ----------
+
+    private fun handlePersonalCenterTarget(lpparam: XC_LoadPackage.LoadPackageParam) {
+        Logger.log(TAG, ">>> handlePersonalCenterTarget 开始")
+
+        loadPersonalConfig()
+
+        try {
+            XposedHelpers.findAndHookMethod(
+                Application::class.java,
+                "onCreate",
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val app = param.thisObject as? Application ?: return
+                        Logger.log(TAG, "========== 个人中心 Application.onCreate 被触发 ==========")
+                        Logger.log(TAG, "application class = ${app.javaClass.name}")
+
+                        hookPersonalInfo(app)
+                        hookPersonalFont(app)
+                        hookPersonalNameColor(app)
+                        hookPersonalBackground(app)
+                    }
+                }
+            )
+            Logger.log(TAG, "个人中心 Application.onCreate hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, "个人中心 Application.onCreate hook 注册失败", t)
+        }
+    }
+
+    /** 读取个人中心相关配置,直接读 config.json */
+    private fun loadPersonalConfig() {
+        val json = try {
+            val file = File("/sdcard/laoli_hooktools/config.json")
+            if (file.exists()) org.json.JSONObject(file.readText()) else org.json.JSONObject()
+        } catch (t: Throwable) {
+            org.json.JSONObject()
+        }
+
+        val nameJson = json.optJSONObject("pc_name")
+        pcNameEnabled = nameJson?.optBoolean("enabled", false) ?: false
+        pcNameValue = nameJson?.optString("value", null)
+
+        val scoreJson = json.optJSONObject("pc_score")
+        pcScoreEnabled = scoreJson?.optBoolean("enabled", false) ?: false
+        pcScoreValue = if (scoreJson != null && scoreJson.has("value")) scoreJson.optInt("value") else null
+
+        val realNameJson = json.optJSONObject("pc_realname")
+        pcRealNameEnabled = realNameJson?.optBoolean("enabled", false) ?: false
+        pcRealNameValue = realNameJson?.optString("value", null)
+
+        val fontJson = json.optJSONObject("pc_font")
+        pcFontEnabled = fontJson?.optBoolean("enabled", false) ?: false
+        pcFontPath = fontJson?.optString("path", null)
+        pcCustomTypeface = null
+
+        val nameColorJson = json.optJSONObject("pc_name_color")
+        pcNameColorEnabled = nameColorJson?.optBoolean("enabled", false) ?: false
+        pcNameColorValue = nameColorJson?.optString("value", null)
+
+        val bgBoyJson = json.optJSONObject("pc_bg_boy")
+        pcBgBoyEnabled = bgBoyJson?.optBoolean("enabled", false) ?: false
+        pcBgBoyPath = bgBoyJson?.optString("path", null)
+
+        val bgGirlJson = json.optJSONObject("pc_bg_girl")
+        pcBgGirlEnabled = bgGirlJson?.optBoolean("enabled", false) ?: false
+        pcBgGirlPath = bgGirlJson?.optString("path", null)
+
+        Logger.log(TAG, "个人中心配置: 昵称 enabled=$pcNameEnabled value=$pcNameValue, 积分 enabled=$pcScoreEnabled value=$pcScoreValue, 实名 enabled=$pcRealNameEnabled value=$pcRealNameValue, 字体 enabled=$pcFontEnabled path=$pcFontPath, 昵称颜色 enabled=$pcNameColorEnabled value=$pcNameColorValue, 背景(男) enabled=$pcBgBoyEnabled path=$pcBgBoyPath, 背景(女) enabled=$pcBgGirlEnabled path=$pcBgGirlPath")
+    }
+
+    /** hook 个人中心个人信息:改 PersonalResponse getter 返回值 */
+    private fun hookPersonalInfo(app: Application) {
+        Logger.log(TAG, ">>> hookPersonalInfo 开始")
+
+        val responseClass = try {
+            XposedHelpers.findClass("com.xtc.resource.serve.bean.PersonalResponse", app.classLoader)
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalInfo: 找不到 PersonalResponse", t)
+            return
+        }
+
+        if (pcNameEnabled && pcNameValue != null) {
+            val value = pcNameValue!!
+            try {
+                XposedHelpers.findAndHookMethod(responseClass, "getName", object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        param.result = value
+                    }
+                })
+                Logger.log(TAG, ">>> hookPersonalInfo: getName -> $value")
+            } catch (t: Throwable) {
+                Logger.e(TAG, ">>> hookPersonalInfo: getName hook 失败", t)
+            }
+        }
+
+        if (pcScoreEnabled && pcScoreValue != null) {
+            val value = pcScoreValue!!
+            try {
+                XposedHelpers.findAndHookMethod(responseClass, "getScore", object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        param.result = value
+                    }
+                })
+                Logger.log(TAG, ">>> hookPersonalInfo: getScore -> $value")
+            } catch (t: Throwable) {
+                Logger.e(TAG, ">>> hookPersonalInfo: getScore hook 失败", t)
+            }
+        }
+
+        if (pcRealNameEnabled && pcRealNameValue != null) {
+            val value = pcRealNameValue!!
+            try {
+                XposedHelpers.findAndHookMethod(responseClass, "getRealName", object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        param.result = value
+                    }
+                })
+                Logger.log(TAG, ">>> hookPersonalInfo: getRealName -> $value")
+            } catch (t: Throwable) {
+                Logger.e(TAG, ">>> hookPersonalInfo: getRealName hook 失败", t)
+            }
+        }
+
+        Logger.log(TAG, ">>> hookPersonalInfo 完成")
+    }
+
+    /** hook 个人中心自定义字体(拦截 TextView 构造 + setText 兜底) */
+    private fun hookPersonalFont(app: Application) {
+        Logger.log(TAG, ">>> hookPersonalFont 开始")
+        if (!pcFontEnabled) {
+            Logger.log(TAG, ">>> 个人中心字体未启用,跳过")
+            return
+        }
+
+        val typeface = resolvePersonalTypeface()
+        if (typeface == null) {
+            Logger.e(TAG, ">>> 个人中心 Typeface 加载失败,跳过")
+            return
+        }
+
+        val constructors: List<Array<Class<*>>> = listOf(
+            arrayOf(Context::class.java),
+            arrayOf(Context::class.java, android.util.AttributeSet::class.java),
+            arrayOf(Context::class.java, android.util.AttributeSet::class.java, java.lang.Integer.TYPE)
+        )
+
+        for (sig in constructors) {
+            try {
+                XposedHelpers.findAndHookConstructor(
+                    TextView::class.java,
+                    *sig,
+                    object : XC_MethodHook() {
+                        override fun afterHookedMethod(param: MethodHookParam) {
+                            val tv = param.thisObject as? TextView ?: return
+                            val tf = pcCustomTypeface ?: return
+                            try {
+                                tv.typeface = tf
+                            } catch (_: Throwable) {
+                            }
+                        }
+                    }
+                )
+                Logger.log(TAG, ">>> hookPersonalFont: TextView 构造器 hook 成功: ${sig.joinToString { it.name }}")
+            } catch (t: Throwable) {
+                Logger.e(TAG, ">>> hookPersonalFont: 构造器 hook 失败: ${t.message}", t)
+            }
+        }
+
+        try {
+            XposedHelpers.findAndHookMethod(
+                TextView::class.java,
+                "setText",
+                CharSequence::class.java,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val tv = param.thisObject as? TextView ?: return
+                        val tf = pcCustomTypeface ?: return
+                        try {
+                            if (tv.typeface !== tf) {
+                                tv.typeface = tf
+                            }
+                        } catch (_: Throwable) {
+                        }
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookPersonalFont: TextView.setText hook 成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalFont: setText hook 失败", t)
+        }
+
+        Logger.log(TAG, ">>> hookPersonalFont 完成")
+    }
+
+    /** 从配置路径加载个人中心自定义 Typeface(带缓存) */
+    private fun resolvePersonalTypeface(): Typeface? {
+        pcCustomTypeface?.let { return it }
+        if (!pcFontEnabled) return null
+        val path = pcFontPath ?: return null
+        val file = File(path)
+        if (!file.exists()) return null
+        return try {
+            Typeface.createFromFile(file).also {
+                pcCustomTypeface = it
+            }
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> resolvePersonalTypeface: 加载字体失败", t)
+            null
+        }
+    }
+
+    /** hook 个人中心昵称颜色(主页 tv_info_nick_name 固定白色,这里改成自定义颜色) */
+    private fun hookPersonalNameColor(app: Application) {
+        Logger.log(TAG, ">>> hookPersonalNameColor 开始")
+        if (!pcNameColorEnabled) {
+            Logger.log(TAG, ">>> 昵称颜色未启用,跳过")
+            return
+        }
+        val value = pcNameColorValue
+        if (value.isNullOrEmpty()) {
+            Logger.log(TAG, ">>> 昵称颜色值为空,跳过")
+            return
+        }
+        val colorInt = try {
+            Color.parseColor(value)
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> 昵称颜色解析失败: $value", t)
+            return
+        }
+        val nickId = app.resources.getIdentifier("tv_info_nick_name", "id", Constants.PERSONAL_CENTER_PACKAGE)
+        if (nickId == 0) {
+            Logger.e(TAG, ">>> 找不到 tv_info_nick_name 资源 id")
+            return
+        }
+        Logger.log(TAG, ">>> tv_info_nick_name id = 0x${Integer.toHexString(nickId)}")
+
+        // 1. setText 兜底:昵称数据加载后 setText 时,id 已确定,直接改色
+        try {
+            XposedHelpers.findAndHookMethod(
+                TextView::class.java,
+                "setText",
+                CharSequence::class.java,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val tv = param.thisObject as? TextView ?: return
+                        if (tv.id == nickId) {
+                            tv.setTextColor(colorInt)
+                        }
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookPersonalNameColor: TextView.setText hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalNameColor: setText hook 注册失败", t)
+        }
+
+        // 2. setTextColor 拦截:防止 setText 之后代码再次把颜色改回白色
+        try {
+            XposedHelpers.findAndHookMethod(
+                TextView::class.java,
+                "setTextColor",
+                Int::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val tv = param.thisObject as? TextView ?: return
+                        if (tv.id == nickId) {
+                            param.args[0] = colorInt
+                        }
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookPersonalNameColor: TextView.setTextColor hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalNameColor: setTextColor hook 注册失败", t)
+        }
+
+        // 3. onAttachedToWindow 兜底:首次渲染时 id 已确定,确保颜色正确
+        try {
+            XposedHelpers.findAndHookMethod(
+                View::class.java,
+                "onAttachedToWindow",
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val tv = param.thisObject as? TextView ?: return
+                        if (tv.id == nickId) {
+                            tv.setTextColor(colorInt)
+                        }
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookPersonalNameColor: View.onAttachedToWindow hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalNameColor: onAttachedToWindow hook 注册失败", t)
+        }
+
+        Logger.log(TAG, ">>> hookPersonalNameColor 完成")
+    }
+
+    /** hook 个人中心背景图(bg_gender_boy / bg_gender_girl,按性别显示) */
+    private fun hookPersonalBackground(app: Application) {
+        Logger.log(TAG, ">>> hookPersonalBackground 开始")
+        if (!pcBgBoyEnabled && !pcBgGirlEnabled) {
+            Logger.log(TAG, ">>> 个人中心背景未启用,跳过")
+            return
+        }
+        Logger.log(TAG, ">>> 背景配置: 男 enabled=$pcBgBoyEnabled path=$pcBgBoyPath, 女 enabled=$pcBgGirlEnabled path=$pcBgGirlPath")
+
+        val res = app.resources
+        val targetMap = mutableMapOf<Int, String>()
+
+        val boyId = res.getIdentifier("bg_gender_boy", "drawable", Constants.PERSONAL_CENTER_PACKAGE)
+        val girlId = res.getIdentifier("bg_gender_girl", "drawable", Constants.PERSONAL_CENTER_PACKAGE)
+        Logger.log(TAG, ">>> getIdentifier: bg_gender_boy=0x${Integer.toHexString(boyId)}, bg_gender_girl=0x${Integer.toHexString(girlId)}")
+
+        if (pcBgBoyEnabled && !pcBgBoyPath.isNullOrEmpty() && boyId != 0) {
+            targetMap[boyId] = pcBgBoyPath!!
+        }
+        if (pcBgGirlEnabled && !pcBgGirlPath.isNullOrEmpty() && girlId != 0) {
+            targetMap[girlId] = pcBgGirlPath!!
+        }
+
+        if (targetMap.isEmpty()) {
+            Logger.log(TAG, ">>> 未解析到背景资源 id,targetMap 为空,跳过")
+            return
+        }
+        Logger.log(TAG, ">>> 背景替换映射: " + targetMap.entries.joinToString { "0x${Integer.toHexString(it.key)} -> ${it.value}" })
+
+        // 诊断:记录个人中心进程加载的所有 drawable 资源 id(0x31 开头),用于确认 Glide 实际加载路径
+        val seenDrawableIds = HashSet<Int>()
+        var diagCount = 0
+        fun diagDrawable(id: Int, tag: String) {
+            if (id in 0x31000000..0x31ffffff && seenDrawableIds.add(id)) {
+                if (diagCount < 40) {
+                    diagCount++
+                    Logger.log(TAG, ">>> [背景诊断] $tag id=0x${Integer.toHexString(id)} 命中=${targetMap.containsKey(id)}")
+                }
+            }
+        }
+
+        // 0. AppCompatResources.getDrawable(Context, int) —— Glide 第一路径
+        try {
+            val appCompatResClass = XposedHelpers.findClass(
+                "androidx.appcompat.content.res.AppCompatResources", app.classLoader
+            )
+            XposedHelpers.findAndHookMethod(
+                appCompatResClass,
+                "getDrawable",
+                Context::class.java,
+                Int::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val id = param.args[1] as Int
+                        diagDrawable(id, "AppCompatResources")
+                        val path = targetMap[id] ?: return
+                        Logger.log(TAG, ">>> [背景] AppCompatResources 命中 id=0x${Integer.toHexString(id)} -> $path")
+                        param.result = createDrawableFromFile(
+                            (param.args[0] as Context).resources, path
+                        )
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookPersonalBackground: AppCompatResources.getDrawable hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalBackground: AppCompatResources.getDrawable hook 注册失败", t)
+        }
+
+        // 0.5 ResourcesCompat.getDrawable(Resources, int, Theme) —— Glide 第二路径
+        try {
+            val resourcesCompatClass = XposedHelpers.findClass(
+                "androidx.core.content.res.ResourcesCompat", app.classLoader
+            )
+            XposedHelpers.findAndHookMethod(
+                resourcesCompatClass,
+                "getDrawable",
+                android.content.res.Resources::class.java,
+                Int::class.javaPrimitiveType,
+                android.content.res.Resources.Theme::class.java,
+                object : XC_MethodHook() {
+                    override fun afterHookedMethod(param: MethodHookParam) {
+                        val id = param.args[1] as Int
+                        diagDrawable(id, "ResourcesCompat")
+                        val path = targetMap[id] ?: return
+                        Logger.log(TAG, ">>> [背景] ResourcesCompat 命中 id=0x${Integer.toHexString(id)} -> $path")
+                        param.result = createDrawableFromFile(
+                            param.args[0] as android.content.res.Resources, path
+                        )
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookPersonalBackground: ResourcesCompat.getDrawable hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalBackground: ResourcesCompat.getDrawable hook 注册失败", t)
+        }
+
+        // 1. Resources.getDrawable(int)
+        try {
+            XposedHelpers.findAndHookMethod(
+                android.content.res.Resources::class.java,
+                "getDrawable",
+                Int::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val id = param.args[0] as Int
+                        diagDrawable(id, "Resources.getDrawable")
+                        val path = targetMap[id] ?: return
+                        Logger.log(TAG, ">>> [背景] Resources.getDrawable 命中 id=0x${Integer.toHexString(id)}")
+                        param.result = createDrawableFromFile(
+                            param.thisObject as android.content.res.Resources, path
+                        )
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookPersonalBackground: Resources.getDrawable(int) hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalBackground: getDrawable(int) hook 注册失败", t)
+        }
+
+        // 2. Resources.getDrawableForDensity(int,int)
+        try {
+            XposedHelpers.findAndHookMethod(
+                android.content.res.Resources::class.java,
+                "getDrawableForDensity",
+                Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val id = param.args[0] as Int
+                        diagDrawable(id, "getDrawableForDensity")
+                        val path = targetMap[id] ?: return
+                        Logger.log(TAG, ">>> [背景] getDrawableForDensity 命中 id=0x${Integer.toHexString(id)}")
+                        param.result = createDrawableFromFile(
+                            param.thisObject as android.content.res.Resources, path
+                        )
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookPersonalBackground: getDrawableForDensity hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalBackground: getDrawableForDensity hook 注册失败", t)
+        }
+
+        // 2.5 Resources.getDrawable(int, Theme)
+        try {
+            XposedHelpers.findAndHookMethod(
+                android.content.res.Resources::class.java,
+                "getDrawable",
+                Int::class.javaPrimitiveType,
+                android.content.res.Resources.Theme::class.java,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val id = param.args[0] as Int
+                        diagDrawable(id, "getDrawable(int,Theme)")
+                        val path = targetMap[id] ?: return
+                        Logger.log(TAG, ">>> [背景] getDrawable(int,Theme) 命中 id=0x${Integer.toHexString(id)}")
+                        param.result = createDrawableFromFile(
+                            param.thisObject as android.content.res.Resources, path
+                        )
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookPersonalBackground: Resources.getDrawable(int,Theme) hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalBackground: getDrawable(int,Theme) hook 注册失败", t)
+        }
+
+        // 3. Context.getDrawable(int)
+        try {
+            XposedHelpers.findAndHookMethod(
+                Context::class.java,
+                "getDrawable",
+                Int::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val id = param.args[0] as Int
+                        diagDrawable(id, "Context.getDrawable")
+                        val path = targetMap[id] ?: return
+                        Logger.log(TAG, ">>> [背景] Context.getDrawable 命中 id=0x${Integer.toHexString(id)}")
+                        param.result = createDrawableFromFile(
+                            (param.thisObject as Context).resources, path
+                        )
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookPersonalBackground: Context.getDrawable(int) hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalBackground: Context.getDrawable(int) hook 注册失败", t)
+        }
+
+        // 4. ImageView.setImageResource(int) 兜底
+        try {
+            XposedHelpers.findAndHookMethod(
+                ImageView::class.java,
+                "setImageResource",
+                Int::class.javaPrimitiveType,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        val id = param.args[0] as Int
+                        diagDrawable(id, "ImageView.setImageResource")
+                        val path = targetMap[id] ?: return
+                        Logger.log(TAG, ">>> [背景] setImageResource 命中 id=0x${Integer.toHexString(id)}")
+                        val iv = param.thisObject as? ImageView ?: return
+                        val bmp = BitmapFactory.decodeFile(path)
+                        if (bmp != null) {
+                            iv.setImageBitmap(bmp)
+                            param.result = null
+                        }
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookPersonalBackground: ImageView.setImageResource hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalBackground: setImageResource hook 注册失败", t)
+        }
+
+        // 5. 直接 hook 主页背景加载入口 upDataBackGround(String),强制替换背景路径。
+        //    主页背景走 Glide(不是 setImageResource),且 Glide 有磁盘缓存,
+        //    靠资源 id 替换不可靠,这里直接从源头把路径改成自定义图。
+        try {
+            val activityClass = XposedHelpers.findClass(
+                "com.xtc.business.personalcenter.module.home.PersonalMainActivity", app.classLoader
+            )
+            val prClass = XposedHelpers.findClass(
+                "com.xtc.resource.serve.bean.PersonalResponse", app.classLoader
+            )
+            val bgHook = object : XC_MethodHook() {
+                override fun beforeHookedMethod(param: MethodHookParam) {
+                    try {
+                        val gender = readPersonalGender(param.thisObject, prClass)
+                        val path = when (gender) {
+                            1 -> pcBgGirlPath
+                            0 -> pcBgBoyPath
+                            else -> return
+                        }
+                        if (!path.isNullOrEmpty() && File(path).exists()) {
+                            param.args[0] = path
+                            Logger.log(TAG, ">>> [背景] upDataBackGround 替换路径 gender=$gender -> $path")
+                        }
+                    } catch (t: Throwable) {
+                        Logger.e(TAG, ">>> [背景] upDataBackGround 替换路径失败", t)
+                    }
+                }
+            }
+            var hooked = false
+            // 方法名 "i" 是 upDataBackGround(String) 混淆后的名字,不同版本可能不同
+            for (name in arrayOf("i", "m5449i")) {
+                if (hooked) break
+                try {
+                    XposedHelpers.findAndHookMethod(activityClass, name, String::class.java, bgHook)
+                    Logger.log(TAG, ">>> hookPersonalBackground: PersonalMainActivity.$name(upDataBackGround) hook 注册成功")
+                    hooked = true
+                } catch (_: Throwable) {
+                }
+            }
+            if (!hooked) {
+                Logger.e(TAG, ">>> hookPersonalBackground: PersonalMainActivity 背景入口 hook 未注册成功")
+            }
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookPersonalBackground: PersonalMainActivity 背景入口 hook 注册失败", t)
+        }
+
+        Logger.log(TAG, ">>> hookPersonalBackground 完成")
+    }
+
+    /** 读取个人中心 Activity 里 PersonalResponse 字段的性别(1=女,0=男,-1=未知) */
+    private fun readPersonalGender(activity: Any?, prClass: Class<*>): Int {
+        if (activity == null) return -1
+        return try {
+            val field = XposedHelpers.findFirstFieldByExactType(activity.javaClass, prClass)
+                ?: return -1
+            val pr = field.get(activity) ?: return -1
+            (XposedHelpers.callMethod(pr, "getGender") as? Int) ?: -1
+        } catch (t: Throwable) {
+            -1
+        }
+    }
+
     private fun handleSportTarget(lpparam: XC_LoadPackage.LoadPackageParam) {
         Logger.log(TAG, ">>> handleSportTarget 开始")
 
@@ -347,6 +1055,9 @@ class MomentHook :
 
                         // 自定义虚拟形象头像
                         hookSportAvatar(app)
+
+                        // 排行榜自定义排名 / 能量
+                        hookSportRank(app)
                     }
                 }
             )
@@ -384,7 +1095,15 @@ class MomentHook :
         sportAvatarEnabled = avatarJson?.optBoolean("enabled", false) ?: false
         sportAvatarPath = avatarJson?.optString("path", null)
 
-        Logger.log(TAG, "运动配置: 能量 enabled=$sportEnergyEnabled value=$sportEnergyValue, 红环=$sportRedRingEnabled, 字体 enabled=$sportFontEnabled path=$sportFontPath, 头像 enabled=$sportAvatarEnabled path=$sportAvatarPath")
+        val rankJson = json.optJSONObject("sport_rank")
+        sportRankEnabled = rankJson?.optBoolean("enabled", false) ?: false
+        sportRankValue = if (rankJson != null && rankJson.has("value")) rankJson.optInt("value") else null
+
+        val rankEnergyJson = json.optJSONObject("sport_rank_energy")
+        sportRankEnergyEnabled = rankEnergyJson?.optBoolean("enabled", false) ?: false
+        sportRankEnergyValue = if (rankEnergyJson != null && rankEnergyJson.has("value")) rankEnergyJson.optInt("value") else null
+
+        Logger.log(TAG, "运动配置: 能量 enabled=$sportEnergyEnabled value=$sportEnergyValue, 红环=$sportRedRingEnabled, 字体 enabled=$sportFontEnabled path=$sportFontPath, 头像 enabled=$sportAvatarEnabled path=$sportAvatarPath, 排名 enabled=$sportRankEnabled value=$sportRankValue, 排名能量 enabled=$sportRankEnergyEnabled value=$sportRankEnergyValue")
     }
 
     /** hook 运动应用能量值与一键红环(改 HomeBean getter 返回值) */
@@ -656,6 +1375,185 @@ class MomentHook :
         }
 
         Logger.log(TAG, ">>> hookSportAvatar 完成")
+    }
+
+    /**
+     * hook 运动排行榜:自定义"自己"的排名与能量显示。
+     *
+     * 排行榜条目由混淆类 e.o.u.h.j.s$c(RankItem)承载:
+     *   b() = getRank()    排名(int,onBind 里被 min(rank,99) 处理)
+     *   c() = getTvEnergy() 能量显示文本(String,已拼好"能量xxx")
+     *   e() = isOwn()       是否是自己
+     * 这里只对"自己"这条替换 getter 返回值,不改服务器数据与列表顺序。
+     */
+    private fun hookSportRank(app: Application) {
+        Logger.log(TAG, ">>> hookSportRank 开始")
+        if (!sportRankEnabled && !sportRankEnergyEnabled) {
+            Logger.log(TAG, ">>> 排行榜修改未启用,跳过")
+            return
+        }
+
+        // 1. 首页排行榜(FragmentBattle):G0(int rank, WatchInfo) 渲染"我的排名/我的能量"大字
+        //    这是用户最先看到的位置,之前漏掉了这个入口导致没生效。
+        try {
+            val fragmentBattleClass = XposedHelpers.findClass("e.o.u.h.m.c0", app.classLoader)
+            val watchInfoClass = XposedHelpers.findClass(
+                "com.xtc.sport.home.bean.RankBeanV2\$WatchInfo", app.classLoader
+            )
+            XposedHelpers.findAndHookMethod(
+                fragmentBattleClass,
+                "G0",
+                Int::class.javaPrimitiveType,
+                watchInfoClass,
+                object : XC_MethodHook() {
+                    override fun beforeHookedMethod(param: MethodHookParam) {
+                        // 自定义排名:G0 的第一个参数就是"我的排名"
+                        if (sportRankEnabled && sportRankValue != null) {
+                            param.args[0] = sportRankValue!!
+                        }
+                        // 自定义能量:直接改 WatchInfo.energy,G0 内部会自行按 g/kg 格式化
+                        if (sportRankEnergyEnabled && sportRankEnergyValue != null) {
+                            try {
+                                XposedHelpers.callMethod(param.args[1], "setEnergy", sportRankEnergyValue!!)
+                            } catch (t: Throwable) {
+                                Logger.e(TAG, ">>> hookSportRank: setEnergy 失败", t)
+                            }
+                        }
+                    }
+                }
+            )
+            Logger.log(TAG, ">>> hookSportRank: 首页排行榜 G0 hook 注册成功")
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookSportRank: 首页排行榜 G0 hook 失败", t)
+        }
+
+        // 2. 排行榜更多页(RankMoreActivity):RankItem.b()/c() 渲染列表里"我"那条
+        val rankItemClass = try {
+            XposedHelpers.findClass("e.o.u.h.j.s\$c", app.classLoader)
+        } catch (t: Throwable) {
+            Logger.e(TAG, ">>> hookSportRank: 找不到排行榜条目类 e.o.u.h.j.s\$c", t)
+            return
+        }
+
+        // 自定义排名
+        if (sportRankEnabled && sportRankValue != null) {
+            val rankValue = sportRankValue!!
+            try {
+                XposedHelpers.findAndHookMethod(rankItemClass, "b", object : XC_MethodReplacement() {
+                    override fun replaceHookedMethod(param: MethodHookParam): Any? {
+                        return if (isOwnRankItem(param.thisObject)) {
+                            rankValue
+                        } else {
+                            XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args)
+                        }
+                    }
+                })
+                Logger.log(TAG, ">>> hookSportRank: 排名 getter b() -> $rankValue")
+            } catch (t: Throwable) {
+                Logger.e(TAG, ">>> hookSportRank: 排名 getter b() hook 失败", t)
+            }
+        }
+
+        // 自定义能量
+        if (sportRankEnergyEnabled && sportRankEnergyValue != null) {
+            val energyValue = sportRankEnergyValue!!
+            try {
+                XposedHelpers.findAndHookMethod(rankItemClass, "c", object : XC_MethodReplacement() {
+                    override fun replaceHookedMethod(param: MethodHookParam): Any? {
+                        return if (isOwnRankItem(param.thisObject)) {
+                            formatRankEnergy(energyValue)
+                        } else {
+                            XposedBridge.invokeOriginalMethod(param.method, param.thisObject, param.args)
+                        }
+                    }
+                })
+                Logger.log(TAG, ">>> hookSportRank: 能量 getter c() -> ${formatRankEnergy(energyValue)}")
+            } catch (t: Throwable) {
+                Logger.e(TAG, ">>> hookSportRank: 能量 getter c() hook 失败", t)
+            }
+        }
+
+        // 3. 排行榜更多页:排名改成 1 后,把"自己"这条移到列表最前面
+        if (sportRankEnabled && sportRankValue != null) {
+            try {
+                val rankMoreActivityClass = XposedHelpers.findClass(
+                    "com.xtc.sport.home.activity.RankMoreActivity", app.classLoader
+                )
+                XposedHelpers.findAndHookMethod(
+                    rankMoreActivityClass,
+                    "S",
+                    java.util.List::class.java,
+                    object : XC_MethodHook() {
+                        override fun beforeHookedMethod(param: MethodHookParam) {
+                            val src = param.args[0] as? List<*> ?: return
+                            if (src.isEmpty()) return
+                            var ownIndex = -1
+                            for (i in src.indices) {
+                                if (isOwnRankItem(src[i])) {
+                                    ownIndex = i
+                                    break
+                                }
+                            }
+                            if (ownIndex <= 0) return
+                            // 原列表可能是不可变 List,直接 removeAt/add 会抛异常,改成重建一个新列表
+                            val reordered = ArrayList<Any?>(src.size)
+                            reordered.add(src[ownIndex])
+                            for (i in src.indices) {
+                                if (i != ownIndex) reordered.add(src[i])
+                            }
+                            param.args[0] = reordered
+                            // 移动后按新位置重新编号排名(j=index+1),否则原第 1 名会和自己一样显示 1
+                            var renumFailed = 0
+                            for (i in reordered.indices) {
+                                try {
+                                    XposedHelpers.setIntField(reordered[i], "j", i + 1)
+                                } catch (t: Throwable) {
+                                    renumFailed++
+                                }
+                            }
+                            if (renumFailed > 0) {
+                                Logger.e(TAG, ">>> hookSportRank: 重新编号失败 $renumFailed 条(可能 j 是 final 字段), rankings=${
+                                    reordered.map { try { XposedHelpers.getIntField(it, "j") } catch (t: Throwable) { -1 } }
+                                }")
+                            }
+                            Logger.log(TAG, ">>> hookSportRank: 已将\"自己\"移到最前并重新编号排名")
+                        }
+                    }
+                )
+                Logger.log(TAG, ">>> hookSportRank: 列表排序 S hook 注册成功")
+            } catch (t: Throwable) {
+                Logger.e(TAG, ">>> hookSportRank: 列表排序 S hook 失败", t)
+            }
+        }
+
+        Logger.log(TAG, ">>> hookSportRank 完成")
+    }
+
+    /** 判断排行榜条目是否是"自己"(RankItem.isOwn 是 boolean 字段 k) */
+    private fun isOwnRankItem(obj: Any?): Boolean {
+        val result = try {
+            XposedHelpers.getBooleanField(obj, "k")
+        } catch (t: Throwable) {
+            false
+        }
+        if (result) {
+            // 命中自己,始终记录,便于确认"自己"是否真的在榜单列表里
+            Logger.log(TAG, ">>> hookSportRank: 命中自己 isOwn=true, class=${obj?.javaClass?.name}")
+        } else if (rankDebugCount < 3) {
+            rankDebugCount++
+            Logger.log(TAG, ">>> hookSportRank: 条目 isOwn=false, class=${obj?.javaClass?.name}")
+        }
+        return result
+    }
+
+    /** 按排行榜规则格式化能量文本:>=1000 显示 xx.xxkg,否则显示 xxxg */
+    private fun formatRankEnergy(value: Int): String {
+        val text = if (value >= 1000) {
+            java.lang.String.format(java.util.Locale.getDefault(), "%.2fkg", value / 1000.0)
+        } else {
+            "${value}g"
+        }
+        return "能量$text"
     }
 
     /** 从配置路径加载运动自定义 Typeface(带缓存) */

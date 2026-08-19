@@ -168,4 +168,46 @@
     <string name="sport_avatar_desc">从相册选择一张图片，替换虚拟形象的显示头像</string>
     <string name="restart_sport">重启运动</string>
     <string name="toast_sport_restarted">运动已强制重启</string>
+    <string name="sport_reset_all">一键恢复</string>
+    <string name="sport_reset_all_confirm">确定要恢复所有运动修改吗？此操作不可撤销。</string>
+    <string name="sport_reset_all_done">已恢复所有运动修改</string>
+    <string name="sport_rank_title">自定义排名</string>
+    <string name="sport_rank_desc">自定义自己在一周运动榜里的排名（仅本地显示）</string>
+    <string name="sport_rank_value_hint">排名（1~99）</string>
+    <string name="sport_rank_save">保存排名</string>
+    <string name="sport_rank_energy_title">自定义能量</string>
+    <string name="sport_rank_energy_desc">自定义自己在一周运动榜里显示的能量（单位 g）</string>
+    <string name="sport_rank_energy_hint">能量值（g）</string>
+    <string name="sport_rank_energy_save">保存能量</string>
+
+    <!-- 个人中心设置 -->
+    <string name="pc_settings_title">个人中心设置</string>
+    <string name="pc_name_title">昵称</string>
+    <string name="pc_name_desc">自定义个人中心显示的昵称</string>
+    <string name="pc_name_hint">输入昵称</string>
+    <string name="pc_name_save">保存昵称</string>
+    <string name="pc_score_title">积分数量</string>
+    <string name="pc_score_desc">自定义个人中心显示的积分数量</string>
+    <string name="pc_score_hint">输入积分数量（整数）</string>
+    <string name="pc_score_save">保存积分</string>
+    <string name="pc_realname_title">实名</string>
+    <string name="pc_realname_desc">自定义个人中心显示的实名信息</string>
+    <string name="pc_realname_hint">输入实名</string>
+    <string name="pc_realname_save">保存实名</string>
+    <string name="pc_font_title">个人中心自定义字体</string>
+    <string name="pc_font_desc">选择 .ttf/.otf 字体文件，替换个人中心全部文字字体</string>
+    <string name="pc_name_color_title">昵称颜色</string>
+    <string name="pc_name_color_desc">自定义个人中心昵称文字颜色</string>
+    <string name="pc_name_color_save">保存颜色</string>
+    <string name="pc_bg_title">自定义背景</string>
+    <string name="pc_bg_desc">替换个人中心顶部性别背景图</string>
+    <string name="pc_bg_boy_title">男生背景</string>
+    <string name="pc_bg_boy_desc">替换 bg_gender_boy.png</string>
+    <string name="pc_bg_girl_title">女生背景</string>
+    <string name="pc_bg_girl_desc">替换 bg_gender_girl.png</string>
+    <string name="restart_pc">重启个人中心</string>
+    <string name="toast_pc_restarted">个人中心已强制重启</string>
+    <string name="pc_reset_all">一键恢复</string>
+    <string name="pc_reset_all_confirm">确定要恢复所有个人中心修改吗？此操作不可撤销。</string>
+    <string name="pc_reset_all_done">已恢复所有个人中心修改</string>
 </resources>

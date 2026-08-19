@@ -12,6 +12,9 @@ object Constants {
     /** 运动应用包名 */
     const val SPORT_PACKAGE = "com.xtc.sport"
 
+    /** 个人中心应用包名 */
+    const val PERSONAL_CENTER_PACKAGE = "com.xtc.personalcenter"
+
     /** 模块自身包名 */
     const val MODULE_PACKAGE = "com.laoli.hooktools"
 
@@ -68,11 +71,33 @@ object Constants {
     const val KEY_SPORT_FONT_PATH = "sport_font_path"
     const val KEY_SPORT_AVATAR_ENABLED = "sport_avatar_enabled"
     const val KEY_SPORT_AVATAR_PATH = "sport_avatar_path"
+    const val KEY_SPORT_RANK_ENABLED = "sport_rank_enabled"
+    const val KEY_SPORT_RANK_VALUE = "sport_rank_value"
+    const val KEY_SPORT_RANK_ENERGY_ENABLED = "sport_rank_energy_enabled"
+    const val KEY_SPORT_RANK_ENERGY_VALUE = "sport_rank_energy_value"
+
+    // ---- 个人中心配置 key ----
+    const val KEY_PC_NAME_ENABLED = "pc_name_enabled"
+    const val KEY_PC_NAME_VALUE = "pc_name_value"
+    const val KEY_PC_SCORE_ENABLED = "pc_score_enabled"
+    const val KEY_PC_SCORE_VALUE = "pc_score_value"
+    const val KEY_PC_REALNAME_ENABLED = "pc_realname_enabled"
+    const val KEY_PC_REALNAME_VALUE = "pc_realname_value"
+    const val KEY_PC_FONT_ENABLED = "pc_font_enabled"
+    const val KEY_PC_FONT_PATH = "pc_font_path"
+    const val KEY_PC_NAME_COLOR_ENABLED = "pc_name_color_enabled"
+    const val KEY_PC_NAME_COLOR_VALUE = "pc_name_color_value"
+    const val KEY_PC_BG_BOY_ENABLED = "pc_bg_boy_enabled"
+    const val KEY_PC_BG_BOY_PATH = "pc_bg_boy_path"
+    const val KEY_PC_BG_GIRL_ENABLED = "pc_bg_girl_enabled"
+    const val KEY_PC_BG_GIRL_PATH = "pc_bg_girl_path"
 
     /** 自定义字体文件在外部存储中的文件名 */
     const val FONT_FILE_NAME = "custom_font.ttf"
     /** 运动自定义字体文件名 */
     const val SPORT_FONT_FILE_NAME = "sport_font.ttf"
+    /** 个人中心自定义字体文件名 */
+    const val PC_FONT_FILE_NAME = "pc_font.ttf"
     /** 自定义字体文件最大字节数(20MB) */
     const val FONT_MAX_BYTES = 20L * 1024 * 1024
 

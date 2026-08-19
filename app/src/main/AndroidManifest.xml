@@ -95,6 +95,12 @@
             android:exported="false"
             android:screenOrientation="portrait" />
 
+        <!-- 个人中心设置页 -->
+        <activity
+            android:name=".ui.PersonalCenterSettingsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+
         <!-- 动态编辑页(由好友圈 Hook 跨进程启动,需 exported) -->
         <activity
             android:name=".ui.EditMomentActivity"

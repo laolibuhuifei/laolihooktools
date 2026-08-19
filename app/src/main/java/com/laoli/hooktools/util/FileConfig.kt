@@ -352,4 +352,168 @@ object FileConfig {
         val path = targetJson.optString("path", null)
         return enabled to path
     }
+
+    // ---- 运动:排行榜(自定义排名) ----
+
+    /** 自定义排名配置的 JSON key */
+    private const val SPORT_RANK_KEY = "sport_rank"
+
+    /** 更新自定义排名配置 */
+    fun updateSportRank(enabled: Boolean, value: Int?) {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_RANK_KEY) ?: JSONObject()
+        targetJson.put("enabled", enabled)
+        if (value != null) {
+            targetJson.put("value", value)
+        } else {
+            targetJson.remove("value")
+        }
+        json.put(SPORT_RANK_KEY, targetJson)
+        writeConfig(json)
+    }
+
+    /** 读取自定义排名配置:返回 (enabled, value) */
+    fun getSportRank(): Pair<Boolean, Int?> {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_RANK_KEY) ?: return false to null
+        val enabled = targetJson.optBoolean("enabled", false)
+        val value = if (targetJson.has("value")) targetJson.optInt("value") else null
+        return enabled to value
+    }
+
+    // ---- 运动:排行榜(自定义能量) ----
+
+    /** 自定义能量配置的 JSON key */
+    private const val SPORT_RANK_ENERGY_KEY = "sport_rank_energy"
+
+    /** 更新自定义能量配置 */
+    fun updateSportRankEnergy(enabled: Boolean, value: Int?) {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_RANK_ENERGY_KEY) ?: JSONObject()
+        targetJson.put("enabled", enabled)
+        if (value != null) {
+            targetJson.put("value", value)
+        } else {
+            targetJson.remove("value")
+        }
+        json.put(SPORT_RANK_ENERGY_KEY, targetJson)
+        writeConfig(json)
+    }
+
+    /** 读取自定义能量配置:返回 (enabled, value) */
+    fun getSportRankEnergy(): Pair<Boolean, Int?> {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(SPORT_RANK_ENERGY_KEY) ?: return false to null
+        val enabled = targetJson.optBoolean("enabled", false)
+        val value = if (targetJson.has("value")) targetJson.optInt("value") else null
+        return enabled to value
+    }
+
+    // ---- 个人中心 ----
+
+    /** 个人中心字段 JSON key(昵称/积分/实名/账号id) */
+    private const val PC_NAME_KEY = "pc_name"
+    private const val PC_SCORE_KEY = "pc_score"
+    private const val PC_REALNAME_KEY = "pc_realname"
+    private const val PC_FONT_KEY = "pc_font"
+    private const val PC_NAME_COLOR_KEY = "pc_name_color"
+    private const val PC_BG_BOY_KEY = "pc_bg_boy"
+    private const val PC_BG_GIRL_KEY = "pc_bg_girl"
+
+    /** 更新个人中心字段(enabled + value,value 统一存字符串) */
+    fun updatePersonalField(key: String, enabled: Boolean, value: String?) {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(key) ?: JSONObject()
+        targetJson.put("enabled", enabled)
+        if (value != null) {
+            targetJson.put("value", value)
+        } else {
+            targetJson.remove("value")
+        }
+        json.put(key, targetJson)
+        writeConfig(json)
+    }
+
+    /** 读取个人中心字段:返回 (enabled, value) */
+    fun getPersonalField(key: String): Pair<Boolean, String?> {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(key) ?: return false to null
+        val enabled = targetJson.optBoolean("enabled", false)
+        val value = if (targetJson.has("value")) targetJson.optString("value") else null
+        return enabled to value
+    }
+
+    /** 昵称 */
+    fun updatePersonalName(enabled: Boolean, value: String?) =
+        updatePersonalField(PC_NAME_KEY, enabled, value)
+    fun getPersonalName(): Pair<Boolean, String?> = getPersonalField(PC_NAME_KEY)
+
+    /** 积分(整数) */
+    fun updatePersonalScore(enabled: Boolean, value: Int?) =
+        updatePersonalField(PC_SCORE_KEY, enabled, value?.toString())
+    fun getPersonalScore(): Pair<Boolean, Int?> {
+        val (enabled, v) = getPersonalField(PC_SCORE_KEY)
+        return enabled to (v?.toIntOrNull())
+    }
+
+    /** 实名 */
+    fun updatePersonalRealName(enabled: Boolean, value: String?) =
+        updatePersonalField(PC_REALNAME_KEY, enabled, value)
+    fun getPersonalRealName(): Pair<Boolean, String?> = getPersonalField(PC_REALNAME_KEY)
+
+    /** 个人中心自定义字体 */
+    fun updatePersonalFont(enabled: Boolean, path: String?) {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(PC_FONT_KEY) ?: JSONObject()
+        targetJson.put("enabled", enabled)
+        if (path != null) {
+            targetJson.put("path", path)
+        } else {
+            targetJson.remove("path")
+        }
+        json.put(PC_FONT_KEY, targetJson)
+        writeConfig(json)
+    }
+
+    fun getPersonalFont(): Pair<Boolean, String?> {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(PC_FONT_KEY) ?: return false to null
+        val enabled = targetJson.optBoolean("enabled", false)
+        val path = targetJson.optString("path", null)
+        return enabled to path
+    }
+
+    /** 个人中心昵称颜色 */
+    fun updatePersonalNameColor(enabled: Boolean, value: String?) =
+        updatePersonalField(PC_NAME_COLOR_KEY, enabled, value)
+    fun getPersonalNameColor(): Pair<Boolean, String?> = getPersonalField(PC_NAME_COLOR_KEY)
+
+    /** 个人中心背景图片(男/女) */
+    fun updatePersonalBg(key: String, enabled: Boolean, path: String?) {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(key) ?: JSONObject()
+        targetJson.put("enabled", enabled)
+        if (path != null) {
+            targetJson.put("path", path)
+        } else {
+            targetJson.remove("path")
+        }
+        json.put(key, targetJson)
+        writeConfig(json)
+    }
+
+    fun getPersonalBg(key: String): Pair<Boolean, String?> {
+        val json = readConfig()
+        val targetJson = json.optJSONObject(key) ?: return false to null
+        val enabled = targetJson.optBoolean("enabled", false)
+        val path = targetJson.optString("path", null)
+        return enabled to path
+    }
+
+    fun updatePersonalBgBoy(enabled: Boolean, path: String?) =
+        updatePersonalBg(PC_BG_BOY_KEY, enabled, path)
+    fun getPersonalBgBoy(): Pair<Boolean, String?> = getPersonalBg(PC_BG_BOY_KEY)
+    fun updatePersonalBgGirl(enabled: Boolean, path: String?) =
+        updatePersonalBg(PC_BG_GIRL_KEY, enabled, path)
+    fun getPersonalBgGirl(): Pair<Boolean, String?> = getPersonalBg(PC_BG_GIRL_KEY)
 }

@@ -280,6 +280,200 @@ class PrefsManager private constructor(context: Context) {
     fun getSportAvatarPath(): String? =
         prefs.getString(Constants.KEY_SPORT_AVATAR_PATH, null)
 
+    // ---- 运动:排行榜(自定义排名) ----
+
+    fun setSportRankEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(Constants.KEY_SPORT_RANK_ENABLED, enabled).commit()
+        val (_, oldValue) = FileConfig.getSportRank()
+        FileConfig.updateSportRank(enabled, oldValue)
+    }
+
+    fun isSportRankEnabled(): Boolean =
+        prefs.getBoolean(Constants.KEY_SPORT_RANK_ENABLED, false)
+
+    fun setSportRankValue(value: Int?) {
+        prefs.edit().apply {
+            if (value == null) {
+                remove(Constants.KEY_SPORT_RANK_VALUE)
+            } else {
+                putInt(Constants.KEY_SPORT_RANK_VALUE, value)
+            }
+        }.commit()
+        val (oldEnabled, _) = FileConfig.getSportRank()
+        FileConfig.updateSportRank(oldEnabled, value)
+    }
+
+    fun getSportRankValue(): Int? =
+        if (prefs.contains(Constants.KEY_SPORT_RANK_VALUE)) {
+            prefs.getInt(Constants.KEY_SPORT_RANK_VALUE, 0)
+        } else null
+
+    // ---- 运动:排行榜(自定义能量) ----
+
+    fun setSportRankEnergyEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(Constants.KEY_SPORT_RANK_ENERGY_ENABLED, enabled).commit()
+        val (_, oldValue) = FileConfig.getSportRankEnergy()
+        FileConfig.updateSportRankEnergy(enabled, oldValue)
+    }
+
+    fun isSportRankEnergyEnabled(): Boolean =
+        prefs.getBoolean(Constants.KEY_SPORT_RANK_ENERGY_ENABLED, false)
+
+    fun setSportRankEnergyValue(value: Int?) {
+        prefs.edit().apply {
+            if (value == null) {
+                remove(Constants.KEY_SPORT_RANK_ENERGY_VALUE)
+            } else {
+                putInt(Constants.KEY_SPORT_RANK_ENERGY_VALUE, value)
+            }
+        }.commit()
+        val (oldEnabled, _) = FileConfig.getSportRankEnergy()
+        FileConfig.updateSportRankEnergy(oldEnabled, value)
+    }
+
+    fun getSportRankEnergyValue(): Int? =
+        if (prefs.contains(Constants.KEY_SPORT_RANK_ENERGY_VALUE)) {
+            prefs.getInt(Constants.KEY_SPORT_RANK_ENERGY_VALUE, 0)
+        } else null
+
+    // ---- 个人中心 ----
+
+    private fun putStringOrRemove(key: String, value: String?) {
+        prefs.edit().apply {
+            if (value.isNullOrEmpty()) {
+                remove(key)
+            } else {
+                putString(key, value)
+            }
+        }.commit()
+    }
+
+    // 昵称
+    fun setPersonalNameEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(Constants.KEY_PC_NAME_ENABLED, enabled).commit()
+        val (_, old) = FileConfig.getPersonalName()
+        FileConfig.updatePersonalName(enabled, old)
+    }
+    fun isPersonalNameEnabled(): Boolean =
+        prefs.getBoolean(Constants.KEY_PC_NAME_ENABLED, false)
+    fun setPersonalNameValue(value: String?) {
+        putStringOrRemove(Constants.KEY_PC_NAME_VALUE, value)
+        val (oldEnabled, _) = FileConfig.getPersonalName()
+        FileConfig.updatePersonalName(oldEnabled, value)
+    }
+    fun getPersonalNameValue(): String? =
+        prefs.getString(Constants.KEY_PC_NAME_VALUE, null)
+
+    // 积分
+    fun setPersonalScoreEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(Constants.KEY_PC_SCORE_ENABLED, enabled).commit()
+        val (_, old) = FileConfig.getPersonalScore()
+        FileConfig.updatePersonalScore(enabled, old)
+    }
+    fun isPersonalScoreEnabled(): Boolean =
+        prefs.getBoolean(Constants.KEY_PC_SCORE_ENABLED, false)
+    fun setPersonalScoreValue(value: Int?) {
+        prefs.edit().apply {
+            if (value == null) {
+                remove(Constants.KEY_PC_SCORE_VALUE)
+            } else {
+                putInt(Constants.KEY_PC_SCORE_VALUE, value)
+            }
+        }.commit()
+        val (oldEnabled, _) = FileConfig.getPersonalScore()
+        FileConfig.updatePersonalScore(oldEnabled, value)
+    }
+    fun getPersonalScoreValue(): Int? =
+        if (prefs.contains(Constants.KEY_PC_SCORE_VALUE)) {
+            prefs.getInt(Constants.KEY_PC_SCORE_VALUE, 0)
+        } else null
+
+    // 实名
+    fun setPersonalRealNameEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(Constants.KEY_PC_REALNAME_ENABLED, enabled).commit()
+        val (_, old) = FileConfig.getPersonalRealName()
+        FileConfig.updatePersonalRealName(enabled, old)
+    }
+    fun isPersonalRealNameEnabled(): Boolean =
+        prefs.getBoolean(Constants.KEY_PC_REALNAME_ENABLED, false)
+    fun setPersonalRealNameValue(value: String?) {
+        putStringOrRemove(Constants.KEY_PC_REALNAME_VALUE, value)
+        val (oldEnabled, _) = FileConfig.getPersonalRealName()
+        FileConfig.updatePersonalRealName(oldEnabled, value)
+    }
+    fun getPersonalRealNameValue(): String? =
+        prefs.getString(Constants.KEY_PC_REALNAME_VALUE, null)
+
+    // 个人中心字体
+    fun setPersonalFontEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(Constants.KEY_PC_FONT_ENABLED, enabled).commit()
+        val (_, oldPath) = FileConfig.getPersonalFont()
+        FileConfig.updatePersonalFont(enabled, oldPath)
+    }
+    fun isPersonalFontEnabled(): Boolean =
+        prefs.getBoolean(Constants.KEY_PC_FONT_ENABLED, false)
+    fun setPersonalFontPath(path: String?) {
+        prefs.edit().apply {
+            if (path.isNullOrEmpty()) {
+                remove(Constants.KEY_PC_FONT_PATH)
+            } else {
+                putString(Constants.KEY_PC_FONT_PATH, path)
+            }
+        }.commit()
+        val (oldEnabled, _) = FileConfig.getPersonalFont()
+        FileConfig.updatePersonalFont(oldEnabled, path)
+    }
+    fun getPersonalFontPath(): String? =
+        prefs.getString(Constants.KEY_PC_FONT_PATH, null)
+
+    // 个人中心昵称颜色
+    fun setPersonalNameColorEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(Constants.KEY_PC_NAME_COLOR_ENABLED, enabled).commit()
+        val (_, old) = FileConfig.getPersonalNameColor()
+        FileConfig.updatePersonalNameColor(enabled, old)
+    }
+    fun isPersonalNameColorEnabled(): Boolean =
+        prefs.getBoolean(Constants.KEY_PC_NAME_COLOR_ENABLED, false)
+    fun setPersonalNameColorValue(value: String?) {
+        putStringOrRemove(Constants.KEY_PC_NAME_COLOR_VALUE, value)
+        val (oldEnabled, _) = FileConfig.getPersonalNameColor()
+        FileConfig.updatePersonalNameColor(oldEnabled, value)
+    }
+    fun getPersonalNameColorValue(): String? =
+        prefs.getString(Constants.KEY_PC_NAME_COLOR_VALUE, null)
+
+    // 个人中心背景(男)
+    fun setPersonalBgBoyEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(Constants.KEY_PC_BG_BOY_ENABLED, enabled).commit()
+        val (_, old) = FileConfig.getPersonalBgBoy()
+        FileConfig.updatePersonalBgBoy(enabled, old)
+    }
+    fun isPersonalBgBoyEnabled(): Boolean =
+        prefs.getBoolean(Constants.KEY_PC_BG_BOY_ENABLED, false)
+    fun setPersonalBgBoyPath(path: String?) {
+        putStringOrRemove(Constants.KEY_PC_BG_BOY_PATH, path)
+        val (oldEnabled, _) = FileConfig.getPersonalBgBoy()
+        FileConfig.updatePersonalBgBoy(oldEnabled, path)
+    }
+    fun getPersonalBgBoyPath(): String? =
+        prefs.getString(Constants.KEY_PC_BG_BOY_PATH, null)
+
+    // 个人中心背景(女)
+    fun setPersonalBgGirlEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean(Constants.KEY_PC_BG_GIRL_ENABLED, enabled).commit()
+        val (_, old) = FileConfig.getPersonalBgGirl()
+        FileConfig.updatePersonalBgGirl(enabled, old)
+    }
+    fun isPersonalBgGirlEnabled(): Boolean =
+        prefs.getBoolean(Constants.KEY_PC_BG_GIRL_ENABLED, false)
+    fun setPersonalBgGirlPath(path: String?) {
+        putStringOrRemove(Constants.KEY_PC_BG_GIRL_PATH, path)
+        val (oldEnabled, _) = FileConfig.getPersonalBgGirl()
+        FileConfig.updatePersonalBgGirl(oldEnabled, path)
+    }
+    fun getPersonalBgGirlPath(): String? =
+        prefs.getString(Constants.KEY_PC_BG_GIRL_PATH, null)
+
     companion object {
         @Volatile private var instance: PrefsManager? = null
         fun get(context: Context): PrefsManager =
